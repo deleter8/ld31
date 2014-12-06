@@ -1,0 +1,5 @@
+* Under Ubuntu 14.04 ( Ubuntu/Linaro 4.8.1-10)
+-- Crashes unless we pass in -pthread on linux
+	g++ --std=c++11 -pthread main.cc
+
+
