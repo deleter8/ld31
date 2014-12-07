@@ -34,6 +34,13 @@ int main()
 		return ActionVal::EMPTY();
 	});
 
+	window = new sf::RenderWindow(sf::VideoMode(1024, 576), TEXT("Dare teh thirty-first"));
+	window_rect = sf::IntRect(sf::Vector2i(0, 0), (sf::Vector2i)window->getSize());
+
+	//while (window == NULL)
+	//{
+	//	sf::sleep(sf::milliseconds(10));
+	//}
 
 	//start going away:
 				auto menu_context = new Context();
@@ -73,6 +80,8 @@ int main()
 	auto music = ResourceManager::get_music(TEXT("robert_del_naja_HS"));
 	bool button_pressed = false;
 	music->play();
+
+
 
 	while (window->isOpen())
 	{
