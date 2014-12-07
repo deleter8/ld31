@@ -17,4 +17,4 @@ public:
 
 };
 
-#endif __SCRIPT_DEF__
+#endif //__SCRIPT_DEF__

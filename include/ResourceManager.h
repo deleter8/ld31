@@ -67,4 +67,4 @@ public:
 };
 
 
-#endif
+#endif //__RESOURCE_MANAGER__
