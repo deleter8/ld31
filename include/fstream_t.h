@@ -6,7 +6,7 @@
 #if defined(_WIN32) || defined(WIN32)
 typedef std::wifstream ifstream_t;
 #else
-typedef std::ifstream ifstream_t
+typedef std::ifstream ifstream_t;
 #endif
 
 
