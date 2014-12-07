@@ -39,4 +39,4 @@ typedef std::string internal_string_t;
 #define ws2s(s) s
 #endif
 
-#endif __STRING_T_TO_END_ALL_STRING_Ts__
+#endif //__STRING_T_TO_END_ALL_STRING_Ts__

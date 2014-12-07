@@ -42,4 +42,4 @@ public:
 	void render(sf::RenderWindow& window);
 };
 
-#endif __CONTEXT_______
+#endif //__CONTEXT_______

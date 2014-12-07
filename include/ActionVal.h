@@ -20,4 +20,4 @@ public:
 	static const ActionVal& EMPTY();
 };
 
-#endif __ACTION_VAL__
+#endif //__ACTION_VAL__

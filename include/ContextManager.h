@@ -36,4 +36,4 @@ public:
 	void sets(string_t name, string_t value);
 };
 
-#endif __CONTEXT_MANAGER__
+#endif //__CONTEXT_MANAGER__
