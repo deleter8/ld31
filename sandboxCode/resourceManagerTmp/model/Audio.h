@@ -1,5 +1,6 @@
 #ifndef _AUDIO_H
 #define _AUDIO_H
+#include <iostream>
 /*
  * =====================================================================================
  *        Class:  Audio
@@ -25,6 +26,9 @@ class Audio
 
 		Audio& operator = ( const Audio &other ); /* assignment operator */
 
+		void print() {
+			std::cout << _name << std::endl;
+		}
 	protected:
 		/* ====================  METHODS       ======================================= */
 

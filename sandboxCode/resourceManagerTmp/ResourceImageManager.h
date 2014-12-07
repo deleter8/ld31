@@ -23,7 +23,7 @@ class ResourceImageManager : public IResourceManager < ResourceImageManager, std
 	void clean (std::shared_ptr<Image> *ptr) override 
 	{
 		std::cout << "deleting image ptr" << std::endl; 
-		ptr->get()->printMe();
+		ptr->get()->print();
 	}
 
 };

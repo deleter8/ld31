@@ -1,5 +1,6 @@
 #ifndef _FONT_H
 #define _FONT_H
+#include <iostream>
 /*
  * =====================================================================================
  *        Class:  Font
@@ -21,6 +22,10 @@ class Font
 
 		Font& operator = ( const Font &other ); /* assignment operator */
 
+		void print() 
+		{
+			std::cout << _name << std::endl;
+		}
 	protected:
 		/* ====================  METHODS       ======================================= */
 
