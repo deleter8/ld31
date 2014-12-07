@@ -7,12 +7,34 @@
 #include "Context.h"
 #include "ContextManager.h"
 
+void crawl_script(ScriptDef * script, string_t prelim)
+{
+	std::cout << ws2s(prelim + script->line_def) << " ";
+	ActionVal * vals = script->vals;
+	while (vals->vals != TEXT(""))
+	{
+		std::cout << ws2s(vals->vals) << ",";
+		if (vals->next == NULL) break;
+		vals = vals->next.get();
+	}
+	std::cout << std::endl;
+
+	for (auto line : script->inner_lines)
+	{
+		crawl_script(line, prelim + TEXT("->"));
+	}
+}
+
 int main()
 {
 	auto context_manager = new ContextManager();
 
 	string_t asset_path = TEXT("../assets/");
 	ResourceManager::init(asset_path);
+
+	auto script = ResourceManager::get_script(TEXT("main"));
+	crawl_script(script, TEXT(""));
+
 
 	sf::RenderWindow * window = NULL;
 	auto window_rect = sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(0, 0));

@@ -59,7 +59,12 @@ sf::Music * ResourceManager::get_music(string_t music)
 
 ScriptDef * ResourceManager::get_script(string_t script_name)
 {
-	return new ScriptDef(TEXT("TODO!!!"));
+	if (_inst->_scripts.find(script_name) == _inst->_scripts.end())
+	{
+		_inst->_scripts[script_name] = load_script(_inst->_filepath + script_name + TEXT(".script"));
+	}
+	
+	return _inst->_scripts[script_name];
 }
 
 void ResourceManager::set_default_font(string_t font_name)

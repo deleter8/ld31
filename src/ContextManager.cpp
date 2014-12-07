@@ -11,7 +11,7 @@ ContextManager::ContextManager()
 		return ActionVal::EMPTY();
 	};
 	_actions[TEXT("setf")] = [this](ActionVal val){
-		this->seti(val.vals, val.next->valf());
+		this->setf(val.vals, val.next->valf());
 		return ActionVal::EMPTY();
 	};
 	_actions[TEXT("sets")] = [this](ActionVal val){
