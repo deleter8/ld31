@@ -8,19 +8,19 @@ ContextManager::ContextManager()
 
 	_actions[TEXT("seti")] = [this](ActionVal val){
 		this->seti(val.vals, val.next->vali());
-		return ActionVal::EMPTY;
+		return ActionVal::EMPTY();
 	};
 	_actions[TEXT("setf")] = [this](ActionVal val){
 		this->seti(val.vals, val.next->valf());
-		return ActionVal::EMPTY;
+		return ActionVal::EMPTY();
 	};
 	_actions[TEXT("sets")] = [this](ActionVal val){
 		this->sets(val.vals, val.next->vals);
-		return ActionVal::EMPTY;
+		return ActionVal::EMPTY();
 	};
 	_actions[TEXT("set_default_font")] = [](ActionVal val){
 		ResourceManager::set_default_font(val.vals);
-		return ActionVal::EMPTY;
+		return ActionVal::EMPTY();
 	};
 }
 

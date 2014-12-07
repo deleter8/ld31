@@ -22,6 +22,7 @@
     <ClInclude Include="..\include\ActionVal.h" />
     <ClInclude Include="..\include\Context.h" />
     <ClInclude Include="..\include\ContextManager.h" />
+    <ClInclude Include="..\include\fstream_t.h" />
     <ClInclude Include="..\include\ResourceManager.h" />
     <ClInclude Include="..\include\ScriptDef.h" />
     <ClInclude Include="..\include\string_t.h" />

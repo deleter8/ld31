@@ -21,3 +21,8 @@ ScriptDef * load_script(string_t filename)
 
 	return new ScriptDef(TEXT("TODO!!!"));
 }
+
+ScriptDef::ScriptDef(string_t thing)
+{
+	line_def = thing;
+}
