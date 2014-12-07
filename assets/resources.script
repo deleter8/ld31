@@ -1,0 +1,39 @@
+﻿def_resource font SourceSansPro-Bold
+
+set_default_font SourceSansPro-Bold
+
+def_resource texture title
+
+def_resource sprite title
+  texture title
+
+def_resource texture menu_options 
+  sprite_dim 750 150
+
+def_resource sprite menu_start
+  texture menu_options 0 0
+  center_origin
+
+def_resource sprite menu_settings
+  texture menu_options 0 1
+  center_origin
+
+def_resource sprite menu_resume
+  texture menu_options 0 2
+  center_origin
+
+def_resource sprite menu_quit
+  texture menu_options 0 3
+  center_origin
+
+def_resource sprite menu_soundlevel
+  texture menu_options 0 4
+  center_origin
+
+def_resource sprite menu_musiclevel
+  texture menu_options 0 5
+  center_origin
+
+def_resource sprite menu_back
+  texture menu_options 0 6
+  center_origin

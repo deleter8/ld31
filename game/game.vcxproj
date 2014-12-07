@@ -11,11 +11,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\ActionVal.cpp" />
+    <ClCompile Include="..\src\Context.cpp" />
+    <ClCompile Include="..\src\ContextManager.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\ResourceManager.cpp" />
+    <ClCompile Include="..\src\ScriptDef.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\ActionVal.h" />
+    <ClInclude Include="..\include\Context.h" />
+    <ClInclude Include="..\include\ContextManager.h" />
     <ClInclude Include="..\include\ResourceManager.h" />
+    <ClInclude Include="..\include\ScriptDef.h" />
+    <ClInclude Include="..\include\string_t.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{171B2F6F-A551-4DE4-90D4-B7353C1A244B}</ProjectGuid>

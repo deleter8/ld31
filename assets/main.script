@@ -1,0 +1,59 @@
+﻿#game sequence
+seti g_window_w 1024
+seti g_window_h 576
+setf g_scale_x .4
+setf g_scale_y .4
+open_window $g_window_w $g_window_h Dare_the_Thirty_First
+
+import resources
+
+def_context main_frame
+  show_image title 0 0
+  always_show true
+
+def_context main_menu
+  show_sprite menu_start 1280 560
+  show_sprite menu_settings 1280 720
+  show_sprite menu_quit 1280 880
+
+  def_handler mouseclick 1130 485 1430 635
+    pop_context main_menu
+    pop_context main_frame
+    push_context game
+
+  def_handler mouseclick 1040 645 1520 795
+    push_context settings_menu
+
+  def_handler mouseclick 1160 805 1400 955
+    quit_game
+
+def_context settings_menu
+  def_element musiclevel_label
+    show_sprite menu_musiclevel 1280 560
+    show_value music_volume 1530 560
+
+  def_element soundlevel_label
+    show_sprite menu_soundlevel 1280 720
+    show_value audio_volume 1530 720
+
+  def_handler mouseclick 1405 525 1480 595
+    lower music_volume
+  def_handler mouseclick 1580 525 1655 595
+    raise music_volume
+  def_handler mouseclick 1405 685 1480 755
+    lower audio_volume
+  def_handler mouseclick 1580 685 1655 755
+    raise audio_volume
+
+  def_element back_label
+    show_sprite menu_back 1280 880
+    handler mouseclick
+      pop_context settings_menu
+
+  def_handler keypress 36
+    pop_context settings_menu
+    
+
+
+push_context main_frame
+push_context main_menu

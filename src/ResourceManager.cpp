@@ -1,37 +1,47 @@
 #include <iostream>
 #include "ResourceManager.h"
 
-ResourceManager * ResourceManager::_inst = new ResourceManager("../assets/", 32, 32);
+ResourceManager * ResourceManager::_inst = new ResourceManager();
 
-sf::Sprite * ResourceManager::get_texture(std::string texture)
+void ResourceManager::init(string_t filepath)
+{
+	_inst->_filepath = filepath;
+}
+
+sf::Sprite * ResourceManager::get_texture(string_t texture)
 {
 	_inst->load_texture_if_needed(texture);
 
 	auto sprite = new sf::Sprite();
-	sprite->setTexture(*_inst->_textures[texture]);
+	sprite->setTexture(*_inst->_textures[texture].texture);
+	sprite->setScale(_inst->_scaling_factor);
 	return sprite;
 }
 
-sf::Sprite * ResourceManager::get_sprite(std::string texture, int x, int y, int h, int w)
+sf::Sprite * ResourceManager::get_sprite(string_t sprite_name)
 {
-	_inst->load_texture_if_needed(texture);
+	
+	auto sprite_def = _inst->_sprite_defs[sprite_name];
+	_inst->load_texture_if_needed(sprite_def.texture_name);
+	auto tex = _inst->_textures[sprite_def.texture_name];
 
 	auto sprite = new sf::Sprite();
-	sprite->setTexture(*_inst->_textures[texture]);
-	auto start_x = x*_inst->_sprite_width;
-	auto start_y = y*_inst->_sprite_height;
-	auto width = _inst->_sprite_width * w;
-	auto height = _inst->_sprite_height * h;
+	sprite->setTexture(*tex.texture);
+	auto start_x = sprite_def.sheet_index_x * tex.sprite_width;
+	auto start_y = sprite_def.sheet_index_y * tex.sprite_height;
+	auto width = tex.sprite_width * tex.sprite_width;
+	auto height = tex.sprite_height * tex.sprite_height;
 	sprite->setTextureRect(sf::IntRect(start_x, start_y, width, height));
+	sprite->setScale(_inst->_scaling_factor);
 	return sprite;
 }
 
-sf::Sound * ResourceManager::get_sound(std::string sound)
+sf::Sound * ResourceManager::get_sound(string_t sound)
 {
 	if (_inst->_soundbuffers.find(sound) == _inst->_soundbuffers.end())
 	{
 		auto soundbuf = new sf::SoundBuffer();
-		soundbuf->loadFromFile(_inst->_filepath + sound + ".wav");
+		soundbuf->loadFromFile(ws2s(_inst->_filepath + sound + TEXT(".wav")));
 		_inst->_soundbuffers[sound] = soundbuf;
 	}
 
@@ -40,20 +50,34 @@ sf::Sound * ResourceManager::get_sound(std::string sound)
 	return snd;
 }
 
-sf::Music * ResourceManager::get_music(std::string music)
+sf::Music * ResourceManager::get_music(string_t music)
 {
 	auto muz = new sf::Music();
-	muz->openFromFile(_inst->_filepath + music + ".ogg");
+	muz->openFromFile(ws2s(_inst->_filepath + music + TEXT(".ogg")));
 	return muz;
 }
 
-ResourceManager::ResourceManager(std::string filepath, int sWidth, int sHeight)
+ScriptDef * ResourceManager::get_script(string_t script_name)
 {
-	_filepath = filepath;
-	_textures = std::unordered_map<std::string, sf::Texture *>();
-	_soundbuffers = std::unordered_map<std::string, sf::SoundBuffer*>();
-	_sprite_height = sHeight;
-	_sprite_width = sWidth;
+	return new ScriptDef(TEXT("TODO!!!"));
+}
+
+void ResourceManager::set_default_font(string_t font_name)
+{
+	_inst->_default_font = _inst->_fonts[font_name];
+}
+
+ResourceManager::ResourceManager()
+{
+	_filepath = TEXT("");
+	
+	_fonts = std::unordered_map<string_t, sf::Font *>();
+	_textures = std::unordered_map<string_t, TextureWrapper> ();
+	_sprite_defs = std::unordered_map<string_t, SpriteDef>();
+	_soundbuffers = std::unordered_map<string_t, sf::SoundBuffer *>();
+	_scripts = std::unordered_map<string_t, ScriptDef *>();
+
+	_scaling_factor = sf::Vector2f(.4f, .4f);
 }
 
 ResourceManager::~ResourceManager()
@@ -61,13 +85,14 @@ ResourceManager::~ResourceManager()
 	clean();
 }
 
-void ResourceManager::load_texture_if_needed(std::string texture)
+void ResourceManager::load_texture_if_needed(string_t texture_name)
 {
-	if (_textures.find(texture) == _textures.end())
+	if (_textures[texture_name].texture == NULL)
 	{
 		auto tex = new sf::Texture();
-		tex->loadFromFile(_filepath + texture + ".png");
-		_textures[texture] = tex;
+		tex->loadFromFile(ws2s(_filepath + texture_name + TEXT(".png")));
+		tex->setSmooth(true);
+		_textures[texture_name].texture = tex;
 	}
 }
 
@@ -78,17 +103,31 @@ void ResourceManager::clean()
 
 void ResourceManager::clean_impl()
 {
-	for (auto it = _textures.begin(); it != _textures.end(); it++)
+	for (auto font : _fonts)
 	{
-		delete (*it).second;
+		delete font.second;
+	}
+	_fonts.clear();
+
+	for (auto texture : _textures)
+	{
+		delete texture.second.texture;
 	}
 	_textures.clear();
+	
+	_sprite_defs.clear();
 
-	for (auto it = _soundbuffers.begin(); it != _soundbuffers.end(); it++)
+	for (auto soundbuffer : _soundbuffers)
 	{
-		std::cout << "deleting " << it->first << std::endl;
-		delete (*it).second;
+		std::cout << "deleting " << ws2s(soundbuffer.first) << std::endl;
+		delete soundbuffer.second;
 	}
 	_soundbuffers.clear();
+
+	for (auto script : _scripts)
+	{
+		delete script.second;
+	}
+	_scripts.clear();
 
 }
