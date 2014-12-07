@@ -1,5 +1,6 @@
 #ifndef _IMAGE_H
 #define _IMAGE_H
+#include <iostream>
 /*
  * =====================================================================================
  *        Class:  Image
@@ -11,6 +12,10 @@ class Image
 	public:
 		/* ====================  LIFECYCLE     ======================================= */
 		Image (int width, int height): _width(width), _height(height){};                             /* constructor */
+		void printMe()
+		{
+			std::cout << _width << " " << _height << std::endl;
+		}
 
 		/* ====================  ACCESSORS     ======================================= */
 

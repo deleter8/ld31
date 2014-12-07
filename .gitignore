@@ -1,9 +1,1 @@
-bin/*
-game/Release/*
-game/Debug/*
-external/*
-*.sdf
-*.opensdf
-*.vcxproj.user
-*.suo
-screenshots/
+**/build/
