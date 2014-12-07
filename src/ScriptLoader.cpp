@@ -6,9 +6,9 @@
 
 #include "string_t.h"
 #include "fstream_t.h"
-#include "ScriptDef.h"
+#include "ScriptRaw.h"
 
-ScriptDef * load_script(string_t filename)
+ScriptRaw * load_script(string_t filename)
 {
 	ifstream_t infile(filename);
 
@@ -22,8 +22,8 @@ ScriptDef * load_script(string_t filename)
 
 	auto lines = split(script_string, '\n');
 	int current_scope_count = 0;
-	auto scope = std::list<ScriptDef*>();
-	scope.push_back(new ScriptDef(TEXT("root")));
+	auto scope = std::list<ScriptRaw*>();
+	scope.push_back(new ScriptRaw(TEXT("root")));
 	scope.back()->vals = (ActionVal*)&ActionVal::EMPTY();
 
 	bool was_error = false;
@@ -55,7 +55,7 @@ ScriptDef * load_script(string_t filename)
 
 			auto things = split(line.substr(space_count), ' ');
 			
-			ScriptDef * script_line = new ScriptDef(things[0]);
+			ScriptRaw * script_line = new ScriptRaw(things[0]);
 			
 			ActionVal * previous = NULL;
 			if (things.size() > 1)
@@ -106,7 +106,7 @@ ScriptDef * load_script(string_t filename)
 	return scope.front();
 }
 
-ScriptDef::ScriptDef(string_t thing)
+ScriptRaw::ScriptRaw(string_t thing)
 {
 	line_def = thing;
 }

@@ -16,7 +16,9 @@
     <ClCompile Include="..\src\ContextManager.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\ResourceManager.cpp" />
-    <ClCompile Include="..\src\ScriptDef.cpp" />
+    <ClCompile Include="..\src\ScriptLoader.cpp" />
+    <ClCompile Include="..\src\ScriptRunner.cpp" />
+    <ClCompile Include="..\src\ScriptScope.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\ActionVal.h" />
@@ -24,7 +26,9 @@
     <ClInclude Include="..\include\ContextManager.h" />
     <ClInclude Include="..\include\fstream_t.h" />
     <ClInclude Include="..\include\ResourceManager.h" />
-    <ClInclude Include="..\include\ScriptDef.h" />
+    <ClInclude Include="..\include\ScriptScope.h" />
+    <ClInclude Include="..\include\ScriptRaw.h" />
+    <ClInclude Include="..\include\ScriptRunner.h" />
     <ClInclude Include="..\include\string_t.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

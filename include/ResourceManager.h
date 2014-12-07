@@ -8,7 +8,8 @@
 #include <SFML/Audio.hpp>
 
 #include "string_t.h"
-#include "ScriptDef.h"
+#include "ScriptRaw.h"
+#include "ScriptScope.h"
 
 class TextureWrapper
 {
@@ -24,6 +25,9 @@ public:
 	string_t texture_name;
 	int sheet_index_x;
 	int sheet_index_y;
+	int sheet_width;
+	int sheet_height;
+	bool center_origin;
 };
 
 class ResourceManager
@@ -36,7 +40,7 @@ private:
 	std::unordered_map<string_t, TextureWrapper> _textures;
 	std::unordered_map<string_t, SpriteDef> _sprite_defs;
 	std::unordered_map<string_t, sf::SoundBuffer *> _soundbuffers;
-	std::unordered_map<string_t, ScriptDef *> _scripts;
+	std::unordered_map<string_t, ScriptRaw *> _scripts;
 	string_t _filepath;
 	sf::Vector2f _scaling_factor;
 	sf::Font * _default_font;
@@ -58,10 +62,11 @@ public:
 	static sf::Sound * get_sound(string_t sound);
 	static sf::Music * get_music(string_t music);
 	static sf::Font * get_font(string_t font_name);
-	static ScriptDef * get_script(string_t script_name);
+	static ScriptRaw * get_script(string_t script_name);
 
 	static void set_default_font(string_t font_name);
 	
+	static ScriptScope * build_resource(ScriptRaw *);
 
 	static void clean();
 };

@@ -29,10 +29,15 @@ sf::Sprite * ResourceManager::get_sprite(string_t sprite_name)
 	sprite->setTexture(*tex.texture);
 	auto start_x = sprite_def.sheet_index_x * tex.sprite_width;
 	auto start_y = sprite_def.sheet_index_y * tex.sprite_height;
-	auto width = tex.sprite_width * tex.sprite_width;
-	auto height = tex.sprite_height * tex.sprite_height;
+	auto width = tex.sprite_width * sprite_def.sheet_width;
+	auto height = tex.sprite_height * sprite_def.sheet_height;
 	sprite->setTextureRect(sf::IntRect(start_x, start_y, width, height));
 	sprite->setScale(_inst->_scaling_factor);
+
+	if (sprite_def.center_origin)
+	{
+		sprite->setOrigin(sf::Vector2f(width / 2.f, height / 2.f));
+	}
 	return sprite;
 }
 
@@ -57,7 +62,7 @@ sf::Music * ResourceManager::get_music(string_t music)
 	return muz;
 }
 
-ScriptDef * ResourceManager::get_script(string_t script_name)
+ScriptRaw * ResourceManager::get_script(string_t script_name)
 {
 	if (_inst->_scripts.find(script_name) == _inst->_scripts.end())
 	{
@@ -65,6 +70,18 @@ ScriptDef * ResourceManager::get_script(string_t script_name)
 	}
 	
 	return _inst->_scripts[script_name];
+}
+
+sf::Font * ResourceManager::get_font(string_t font_name)
+{
+	if (_inst->_fonts.find(font_name) == _inst->_fonts.end())
+	{
+		auto font = new sf::Font();
+		font->loadFromFile(ws2s(_inst->_filepath + font_name + TEXT(".ttf")));
+		_inst->_fonts[font_name] = font;
+	}
+	
+	return _inst->_fonts[font_name];
 }
 
 void ResourceManager::set_default_font(string_t font_name)
@@ -80,7 +97,7 @@ ResourceManager::ResourceManager()
 	_textures = std::unordered_map<string_t, TextureWrapper> ();
 	_sprite_defs = std::unordered_map<string_t, SpriteDef>();
 	_soundbuffers = std::unordered_map<string_t, sf::SoundBuffer *>();
-	_scripts = std::unordered_map<string_t, ScriptDef *>();
+	_scripts = std::unordered_map<string_t, ScriptRaw *>();
 
 	_scaling_factor = sf::Vector2f(.4f, .4f);
 }
@@ -135,4 +152,75 @@ void ResourceManager::clean_impl()
 	}
 	_scripts.clear();
 
+}
+
+
+ScriptScope * ResourceManager::build_resource(ScriptRaw * raw)
+{
+	auto scope = new ScriptScope();
+
+	scope->statements = NULL; //error b/c this doesn't make sense, there shouldn't be actions in the def-scope of context
+	string_t resource_type = raw->vals->vals;
+
+	if (resource_type == TEXT("font"))
+	{
+		get_font(raw->vals->next->vals);
+	}
+	else if (resource_type == TEXT("texture"))
+	{
+		_inst->load_texture_if_needed(raw->vals->next->vals);
+		TextureWrapper * texture_wrapper = &_inst->_textures[raw->vals->next->vals];
+		scope->defs[TEXT("def_attrib")] = [texture_wrapper](ScriptRaw* raw){
+			string_t attrib_name = raw->vals->vals;
+			if (attrib_name == TEXT("sprite_dim"))
+			{
+				auto w = raw->vals->next->vali();
+				auto h = raw->vals->next->next->vali();
+				
+				texture_wrapper->sprite_width = w;
+				texture_wrapper->sprite_height = h;
+			}
+			return (ScriptScope*)NULL;
+		};
+	}
+	else if (resource_type == TEXT("sprite"))
+	{
+		_inst->_sprite_defs[raw->vals->next->vals] = SpriteDef();
+		SpriteDef * sprite_def = &_inst->_sprite_defs[raw->vals->next->vals];
+		sprite_def->center_origin = false;
+		sprite_def->sheet_width = 1;
+		sprite_def->sheet_height = 1;
+		sprite_def->sheet_index_x = 0;
+		sprite_def->sheet_index_y = 0;
+
+		scope->defs[TEXT("def_attrib")] = [sprite_def](ScriptRaw* raw){
+			string_t attrib_name = raw->vals->vals;
+			if (attrib_name == TEXT("texture"))
+			{
+				auto texture_name = raw->vals->next->vals;
+				sprite_def->texture_name = texture_name;
+
+				if (raw->vals->next->next != NULL && raw->vals->next->next->vals != TEXT(""))
+				{
+					auto idx = raw->vals->next->next->vali();
+					auto idy = raw->vals->next->next->next->vali();
+
+					sprite_def->sheet_index_x = idx;
+					sprite_def->sheet_index_y = idy;
+
+					if (raw->vals->next->next->next->next != NULL && raw->vals->next->next->next->next->vals != TEXT(""))
+					{
+						sprite_def->sheet_width = raw->vals->next->next->next->next->vali();
+						sprite_def->sheet_height = raw->vals->next->next->next->next->next->vali();
+					}
+				}
+			}
+			else if (attrib_name == TEXT("center_origin"))
+			{
+				sprite_def->center_origin = true;
+			}
+			return (ScriptScope*)NULL;
+		};
+	}
+	return scope;
 }

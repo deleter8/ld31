@@ -30,7 +30,13 @@
     <ClCompile Include="..\src\ActionVal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\ScriptDef.cpp">
+    <ClCompile Include="..\src\ScriptRunner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ScriptLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ScriptScope.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,13 +53,19 @@
     <ClInclude Include="..\include\ActionVal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\ScriptDef.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\string_t.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\fstream_t.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ScriptRaw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ScriptRunner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ScriptScope.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
