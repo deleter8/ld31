@@ -1,4 +1,4 @@
-﻿#game sequence
+#game sequence
 seti g_window_w 1024
 seti g_window_h 576
 setf g_scale_x .4
