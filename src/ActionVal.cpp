@@ -1,16 +1,16 @@
 #include "ActionVal.h"
 
-ActionVal ActionVal::empty = ActionVal();
+ActionVal * ActionVal::empty = new ActionVal();
 
 ActionVal::ActionVal()
 {
-	//next = std::shared_ptr<ActionVal>();
+	next = std::shared_ptr<ActionVal>();
 	vals = TEXT("");
 }
 
 ActionVal::ActionVal(std::shared_ptr<ActionVal>& action) : ActionVal()
 {
-	//next = std::shared_ptr<ActionVal>(action);
+	next = std::shared_ptr<ActionVal>(action);
 }
 
 int ActionVal::vali()
@@ -25,5 +25,5 @@ float ActionVal::valf()
 
 const ActionVal& ActionVal::EMPTY()
 {
-	return empty;
+	return *empty;
 }

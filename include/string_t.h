@@ -2,6 +2,7 @@
 #define __STRING_T_TO_END_ALL_STRING_Ts__
 
 #include <string>
+#include <sstream>
 
 #if defined(_WIN32) || defined(WIN32)
 #include <codecvt>
@@ -38,5 +39,15 @@ typedef std::string internal_string_t;
 #define s2ws(s) s
 #define ws2s(s) s
 #endif
+
+#if defined(_WIN32) || defined(WIN32)
+#include <codecvt>
+typedef std::wstringstream stringstream_t;
+typedef std::stringstream  internal_stringstream_t;
+#else
+typedef std::stringstream stringstream_t;
+typedef std::stringstream  internal_stringstream_t;
+#endif
+
 
 #endif //__STRING_T_TO_END_ALL_STRING_Ts__

@@ -8,7 +8,7 @@
 class ActionVal
 {
 private:
-	static ActionVal empty;
+	static ActionVal * empty;
 public:
 	ActionVal();
 	ActionVal(std::shared_ptr<ActionVal>&);
