@@ -150,7 +150,7 @@ int main()
 	bool button_pressed = false;
 	music->play();
 
-	auto key_pressed = std::unordered_map<sf::Keyboard::Key, bool>();
+	auto key_pressed = std::unordered_map<sf::Keyboard::Key, bool, std::hash<int> >();
 	for (auto key : context_manager->Keys())
 	{
 		key_pressed[key] = false;
