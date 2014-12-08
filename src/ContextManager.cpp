@@ -89,7 +89,8 @@ bool ContextManager::handle_keyheld(sf::Keyboard::Key key)
 
 void ContextManager::render(sf::RenderWindow& window)
 {
-	auto top_context = _context_stack.back();
+	Context * top_context = NULL;
+	if (_context_stack.size() > 0) top_context = _context_stack.back();
 	for (auto context : _context_stack)
 	{
 		if (!context->only_handle_when_top_context() || context == top_context)

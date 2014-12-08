@@ -1,8 +1,7 @@
 #game sequence
 set g_window_w 1024
 set g_window_h 576
-set g_scale_x .4
-set g_scale_y .4
+
 open_window $g_window_w $g_window_h Dare_the_Thirty_First
 
 import resources
@@ -56,6 +55,13 @@ def_context settings_menu
   def_handler keypress 36
     pop_context settings_menu
 
+def_context game
+  def_handler keypress 0
+    play_sound jump2
+  def_handler keypress 36
+    pop_context
+    push_context main_frame
+    push_context main_menu
 
 push_context main_frame
 push_context main_menu

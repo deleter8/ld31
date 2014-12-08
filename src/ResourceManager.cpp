@@ -105,7 +105,14 @@ ResourceManager::ResourceManager()
 	_soundbuffers = std::unordered_map<string_t, sf::SoundBuffer *>();
 	_scripts = std::unordered_map<string_t, ScriptRaw *>();
 
-	_scaling_factor = sf::Vector2f(.4f, .4f);
+	_internal_res = sf::Vector2i(2560, 1440);
+	_scaling_factor = sf::Vector2f(1, 1);
+}
+
+void ResourceManager::set_screen_res(int x, int y)
+{
+	_inst->_scaling_factor = sf::Vector2f(float(x) / (float)_inst->_internal_res.x,
+		                                  (float)y / (float)_inst->_internal_res.y);
 }
 
 ResourceManager::~ResourceManager()
@@ -171,6 +178,10 @@ ScriptScope * ResourceManager::build_resource(ScriptRaw * raw)
 	if (resource_type == TEXT("font"))
 	{
 		get_font(raw->vals->next->vals);
+	}
+	else if (resource_type == TEXT("sound"))
+	{
+		get_sound(raw->vals->next->vals);
 	}
 	else if (resource_type == TEXT("texture"))
 	{

@@ -43,6 +43,7 @@ private:
 	std::unordered_map<string_t, ScriptRaw *> _scripts;
 	string_t _filepath;
 	sf::Vector2f _scaling_factor;
+	sf::Vector2i _internal_res;
 	sf::Font * _default_font;
 
 	ResourceManager();
@@ -69,6 +70,8 @@ public:
 	static ScriptScope * build_resource(ScriptRaw *);
 
 	static const sf::Vector2f& scaling_factor();
+
+	static void set_screen_res(int x, int y);
 
 	static void clean();
 };

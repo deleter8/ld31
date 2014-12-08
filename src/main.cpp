@@ -20,6 +20,7 @@ int main()
 
 	sf::RenderWindow * window = NULL;
 	auto window_rect = sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(0, 0));
+	bool quit_game = false;
 
 	script_runner->add_def(TEXT("def_context"), [&](ScriptRaw* raw){
 		auto context = new Context();
@@ -48,28 +49,40 @@ int main()
 	});
 
 	script_runner->add_action(TEXT("open_window"), [&](ActionVal * val){
+		if (window != NULL)
+		{
+			if (window->isOpen())
+			{
+				window->close();
+			}
+			delete window;
+		}
 		int w = val->vali();
 		int h = val->next->vali();
 		string_t title = val->next->next->vals;
 		std::replace(title.begin(), title.end(), '_', ' ');
 		window = new sf::RenderWindow(sf::VideoMode(w, h), title);
 		window_rect = sf::IntRect(sf::Vector2i(0, 0), (sf::Vector2i)window->getSize());
-		
+		ResourceManager::set_screen_res(w, h);
+
 		return ActionVal::EMPTY();
 	});
 	
 	script_runner->add_action(TEXT("quit_game"), [&](ActionVal * val){
-		window->close(); 
+		window->close();
+		quit_game = true;
+		return ActionVal::EMPTY();
+	});
+
+	script_runner->add_action(TEXT("play_sound"), [&](ActionVal * val){
+		ResourceManager::get_sound(val->vals)->play();
 		
 		return ActionVal::EMPTY();
 	});
 
-	auto script = ResourceManager::get_script(TEXT("main"));
-	script_runner->run(script);
+	script_runner->run(ResourceManager::get_script(TEXT("main")));
 	
-    auto test_sound = ResourceManager::get_sound(TEXT("jump2"));
-
-	auto music = ResourceManager::get_music(TEXT("robert_del_naja_HS"));
+    auto music = ResourceManager::get_music(TEXT("robert_del_naja_HS"));
 	bool button_pressed = false;
 	music->play();
 
@@ -79,61 +92,57 @@ int main()
 		key_pressed[key] = false;
 	}
 
-	while (window->isOpen())
+	while (!quit_game)
 	{
-		sf::Event event;
-		while (window->pollEvent(event))
+		if (window != NULL && window->isOpen())
 		{
-			if (event.type == sf::Event::Closed)
+			sf::Event event;
+			while (window->pollEvent(event))
 			{
-				window->close();
+				if (event.type == sf::Event::Closed)
+				{
+					window->close();
+				}
 			}
-		}
 
-		for (auto key : context_manager->Keys())
-		{
-			if (sf::Keyboard::isKeyPressed(key))
+			for (auto key : context_manager->Keys())
 			{
-				context_manager->handle_keyheld(key);
-				key_pressed[key] = true;
+				if (sf::Keyboard::isKeyPressed(key))
+				{
+					context_manager->handle_keyheld(key);
+					key_pressed[key] = true;
+				}
+				else if (key_pressed[key])
+				{
+					auto handled = context_manager->handle_keypress(key);
+					key_pressed[key] = false;
+				}
 			}
-			else if (key_pressed[key])
+
+			auto coords = sf::Mouse::getPosition(*window);
+			bool in_window = window_rect.contains(coords);
+			coords.x = coords.x / ResourceManager::scaling_factor().x;
+			coords.y = coords.y / ResourceManager::scaling_factor().y;
+
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
-				auto handled = context_manager->handle_keypress(key);
-				key_pressed[key] = false;
+				if (in_window) context_manager->handle_mousedown(coords.x, coords.y);
+				button_pressed = true;
 			}
-		}
+			else if (button_pressed)
+			{
+				button_pressed = false;
+				//todo: enhance with coords where button went down for drag and such
+				if (in_window) context_manager->handle_mouseclick(coords.x, coords.y);
+				if (in_window) std::cout << coords.x << ", " << coords.y << std::endl;
+			}
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		{
-			if(test_sound->getStatus() != sf::Sound::Playing )test_sound->play();
+			window->clear();
+			context_manager->render(*window);
+			window->display();
 		}
-
-		auto coords = sf::Mouse::getPosition(*window);
-		bool in_window = window_rect.contains(coords);
-		coords.x = coords.x / ResourceManager::scaling_factor().x;
-		coords.y = coords.y / ResourceManager::scaling_factor().y;
-		
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-		{
-			if (in_window) context_manager->handle_mousedown(coords.x, coords.y);
-			button_pressed = true;
-		}
-		else if (button_pressed)
-		{
-			button_pressed = false;
-			//todo: enhance with coords where button went down for drag and such
-			if (in_window) context_manager->handle_mouseclick(coords.x, coords.y);
-			if (in_window) std::cout << coords.x << ", " << coords.y << std::endl;
-		}
-		
-		window->clear();
-		context_manager->render(*window);
-		window->display();
 		sf::sleep(sf::milliseconds(1));
 	}
-
-	delete test_sound;
 
 	music->stop();
 

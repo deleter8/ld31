@@ -37,3 +37,5 @@ def_resource sprite menu_musiclevel
 def_resource sprite menu_back
   def_attrib texture menu_options 0 6
   def_attrib center_origin
+
+def_resource sound jump2
