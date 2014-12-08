@@ -6,10 +6,8 @@
 #include <thread>
 
 
-class ResourceAudioManager : public IResourceManager <ResourceAudioManager, int, Audio >
+class ResourceAudioManager : public IResourceManager <ResourceAudioManager, int, Audio *>
 {
-	friend class Singleton<ResourceAudioManager>;	
-
 	public:
 	ResourceAudioManager(){}
 	virtual ~ResourceAudioManager(){}
@@ -25,7 +23,7 @@ class ResourceAudioManager : public IResourceManager <ResourceAudioManager, int,
 		return audio;
 	}
 
-	void clean(Audio* audio) override 
+	void clean(Audio** audio) override 
 	{
 	}
 

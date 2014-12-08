@@ -6,8 +6,6 @@
 
 class ResourceImageManager : public IResourceManager < ResourceImageManager, std::string, std::shared_ptr<Image> >
 {
-	friend class Singleton<ResourceImageManager>;	
-
 	public:
 	ResourceImageManager(){}
 	virtual ~ResourceImageManager(){}

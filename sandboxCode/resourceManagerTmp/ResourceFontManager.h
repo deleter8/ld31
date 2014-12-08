@@ -5,8 +5,6 @@
 
 class ResourceFontManager : public IResourceManager <ResourceFontManager, int, Font *> 
 {
-	friend class Singleton<ResourceFontManager>;	
-
 	public:
 	ResourceFontManager(){}
 	virtual ~ResourceFontManager(){}

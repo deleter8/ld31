@@ -5,10 +5,10 @@
 #include <unordered_map>
 #include <algorithm>
 #include <type_traits>
-#include "Singleton.h"
+//#include "Singleton.h"
 
 template<class MANAGER, typename KEY, class RESOURCE >
-class IResourceManager : public Singleton<MANAGER> 
+class IResourceManager //: public Singleton<MANAGER> 
 {
 	private:
 		enum class ResourceState : short 
@@ -111,6 +111,19 @@ class IResourceManager : public Singleton<MANAGER>
 			std::for_each(_resourceMap.begin(), _resourceMap.end(), [this](std::pair<const KEY,std::unique_ptr<ResourceItem>> &element){clean(&(std::get<1>(element).get())->resource);});
 			_resourceMap.clear();
 		}
+		/*
+		 *--------------------------------------------------------------------------------------
+		 *       Class:  IResourceManager
+		 *      Method:  IResourceManager ::isLoaded
+		 * Description:  
+		 *--------------------------------------------------------------------------------------
+		 */
+		bool isLoaded(KEY key)
+		{
+			if(_resourceMap[key]->currentState == ResourceState::LOADED) {return true;}
+			return false;
+		}
+
 	private:
 		std::unordered_map< KEY, std::unique_ptr<ResourceItem> > _resourceMap;
 };

@@ -8,9 +8,6 @@
  * =====================================================================================
  */
 
-static void free_audio(Audio *a) }{
-	std::cout << "Freeing audio" << std::endl;
-}
 class Audio
 {
 	public:
