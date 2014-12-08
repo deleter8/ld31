@@ -19,6 +19,8 @@
     <ClCompile Include="..\src\ScriptLoader.cpp" />
     <ClCompile Include="..\src\ScriptRunner.cpp" />
     <ClCompile Include="..\src\ScriptScope.cpp" />
+    <ClCompile Include="..\src\Transition.cpp" />
+    <ClCompile Include="..\src\TransitionManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\ActionVal.h" />
@@ -30,6 +32,8 @@
     <ClInclude Include="..\include\ScriptRaw.h" />
     <ClInclude Include="..\include\ScriptRunner.h" />
     <ClInclude Include="..\include\string_t.h" />
+    <ClInclude Include="..\include\Transition.h" />
+    <ClInclude Include="..\include\TransitionManager.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{171B2F6F-A551-4DE4-90D4-B7353C1A244B}</ProjectGuid>

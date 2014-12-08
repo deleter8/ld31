@@ -70,6 +70,7 @@ int main()
 	
 	script_runner->add_action(TEXT("quit_game"), [&](ActionVal * val){
 		window->close();
+		sf::sleep(sf::milliseconds(300));
 		quit_game = true;
 		return ActionVal::EMPTY();
 	});

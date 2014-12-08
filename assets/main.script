@@ -9,22 +9,31 @@ import resources
 def_context main_frame
   def_attrib sprite title 0 0
 
+#def_transition main_menu_to_game
+#  transition fadeout 1 0 100
+
 def_context main_menu
-  def_attrib sprite menu_start 1280 560
-  def_attrib sprite menu_settings 1280 720
-  def_attrib sprite menu_quit 1280 880
   def_attrib hide_nonfocused
 
-  def_handler mouseclick 1130 485 1430 635
-    pop_context main_menu
-    pop_context main_frame
-    push_context game
+  def_element start_label
+    def_attrib sprite menu_start 1280 560
+    def_handler mouseclick
+      play_sound menu_click
+      pop_context main_menu
+      pop_context main_frame
+      push_context game
 
-  def_handler mouseclick 1040 645 1520 795
-    push_context settings_menu
+  def_element settings_label
+    def_attrib sprite menu_settings 1280 860
+    def_handler mouseclick
+      play_sound menu_click
+      push_context settings_menu
 
-  def_handler mouseclick 1160 805 1400 955
-    quit_game
+  def_element quit_label
+    def_attrib sprite menu_quit 1280 1160
+    def_handler mouseclick
+      play_sound menu_click
+      quit_game
 
   def_handler keypress 36
     quit_game
@@ -35,21 +44,22 @@ def_context settings_menu
     def_attrib value music_volume 1530 560
 
   def_element soundlevel_label
-    def_attrib sprite menu_soundlevel 1280 720
-    def_attrib value audio_volume 1530 720
+    def_attrib sprite menu_soundlevel 1280 860
+    def_attrib value audio_volume 1530 860
 
   def_handler mouseclick 1405 525 1480 595
     lower music_volume
   def_handler mouseclick 1580 525 1655 595
     raise music_volume
-  def_handler mouseclick 1405 685 1480 755
+  def_handler mouseclick 1405 825 1480 895
     lower audio_volume
-  def_handler mouseclick 1580 685 1655 755
+  def_handler mouseclick 1580 825 1655 895
     raise audio_volume
 
   def_element back_label
-    def_attrib sprite menu_back 1280 880
+    def_attrib sprite menu_back 1280 1160
     def_handler mouseclick
+      play_sound menu_click
       pop_context settings_menu
 
   def_handler keypress 36
