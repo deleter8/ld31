@@ -9,12 +9,7 @@ import resources
 def_context main_frame
   def_attrib sprite title 0 0
 
-#def_transition main_menu_to_game
-#  transition fadeout 1 0 100
-
 def_context main_menu
-  def_attrib hide_nonfocused
-
   def_element start_label
     def_attrib sprite menu_start 1280 560
     def_handler mouseclick
@@ -22,11 +17,13 @@ def_context main_menu
       pop_context main_menu
       pop_context main_frame
       push_context game
+      
 
   def_element settings_label
     def_attrib sprite menu_settings 1280 860
     def_handler mouseclick
       play_sound menu_click
+      pop_context main_menu
       push_context settings_menu
 
   def_element quit_label
@@ -61,6 +58,7 @@ def_context settings_menu
     def_handler mouseclick
       play_sound menu_click
       pop_context settings_menu
+      push_context main_menu
 
   def_handler keypress 36
     pop_context settings_menu

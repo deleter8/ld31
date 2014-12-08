@@ -167,7 +167,6 @@ void ResourceManager::clean_impl()
 
 }
 
-
 ScriptScope * ResourceManager::build_resource(ScriptRaw * raw)
 {
 	auto scope = new ScriptScope();

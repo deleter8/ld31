@@ -33,10 +33,24 @@ ScriptRaw * load_script(string_t filename)
 		bool is_comment = false;
 		bool not_just_spaces = false;
 		int space_count = 0;
+		//just fyi to the future: this *might* not handle really weird cases with unicode
+		// with all the char comparison shtuff
+		int char_count = 0;
 		for (auto c : line)
 		{ 
-			//just fyi to the future: this *might* not handle really weird cases with unicode
-			if (!not_just_spaces && c == '#') is_comment = true;
+			
+			if (c == '#')
+			{
+				if (!not_just_spaces)
+				{
+					is_comment = true;
+				}
+				else
+				{
+					line = line.substr(0, char_count);
+					break;
+				}
+			}
 			if (c != ' ' && c != '\t') not_just_spaces = true; 
 			else if (!not_just_spaces) space_count++;
 			if (!not_just_spaces && c == '\t') space_count++; //tabs == 2 spaces
