@@ -27,6 +27,9 @@ def_context main_menu
   def_handler mouseclick 1160 805 1400 955
     quit_game
 
+  def_handler keypress 36
+    quit_game
+
 def_context settings_menu
   def_element musiclevel_label
     def_attrib sprite menu_musiclevel 1280 560

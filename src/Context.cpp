@@ -12,6 +12,10 @@ Context::Context()
 	_inner_elements = std::list<Context*>();
 	_inner_element_lookup = std::unordered_map<string_t, Context*>();
 
+	has_lingering_mouseclick_handler = false;
+	has_lingering_mousedown_handler = false;
+
+	_only_handle_when_top_context = false;
 }
 
 void Context::add_render_object(sf::Drawable * object)
@@ -132,6 +136,23 @@ void Context::render(sf::RenderWindow& window)
 
 const std::list<sf::Keyboard::Key> Context::Keys()
 {
+	_keys.clear();
+	for (auto element : _inner_elements)
+	{
+		for (auto key : element->Keys())
+		{
+			_keys.push_back(key);
+		}
+	}	
+	for (auto handler : _keypress_handlers)
+	{
+		_keys.push_back(handler.first);
+	}
+	for (auto handler : _keyheld_handlers)
+	{
+		_keys.push_back(handler.first);
+	}
+	_keys.unique();
 	return _keys;
 }
 
@@ -148,14 +169,19 @@ ScriptScope * Context::build_context(ScriptRaw *)
 			string_t sprite_name = raw->vals->next->vals;
 			auto x = raw->vals->next->next->vali();
 			auto y = raw->vals->next->next->next->vali();
-			auto sprite = ResourceManager::get_sprite(sprite_name);
-			sprite->setPosition(x, y);
-			_draw_list.push_back(sprite);
-			_first_sprite = sprite;
+			auto sprite_thing = SpriteThings();
+			sprite_thing.sprite = sprite_name;
+			sprite_thing.x = x;
+			sprite_thing.y = y;
+			_sprites.push_back(sprite_thing);
 		} 
 		else if (attrib_name == TEXT("value"))
 		{
 			//TODO 
+		}
+		else if (attrib_name == TEXT("hide_nonfocused"))
+		{
+			_only_handle_when_top_context = true;
 		}
 		
 		return (ScriptScope*)NULL;
@@ -165,24 +191,6 @@ ScriptScope * Context::build_context(ScriptRaw *)
 		string_t event_name = raw->vals->vals;
 		if (event_name.find(TEXT("mouse")) == 0)
 		{
-			sf::IntRect rect;
-			if (raw->vals->next == NULL || raw->vals->next->vals == TEXT(""))
-			{
-				if (_draw_list.size() != 1) return (ScriptScope*)NULL; //error bad def
-				rect = (sf::IntRect)_first_sprite->getGlobalBounds();
-			}
-			else
-			{
-				auto x1 = raw->vals->next->vali();
-				auto y1 = raw->vals->next->next->vali();
-				auto x2 = raw->vals->next->next->next->vali();
-				auto y2 = raw->vals->next->next->next->next->vali();
-
-				auto topleft = sf::Vector2i(x1, y1);
-				auto bottomright = sf::Vector2i(x2, y2);
-				rect = sf::IntRect(topleft, bottomright - topleft);
-			}
-			
 			auto local_scope = new ScriptScope();
 			
 			auto handler_statements = std::shared_ptr<script_statement_list_t>(new script_statement_list_t());
@@ -196,6 +204,29 @@ ScriptScope * Context::build_context(ScriptRaw *)
 				}
 				return true;
 			};
+
+			sf::IntRect rect;
+			if (raw->vals->next == NULL || raw->vals->next->vals == TEXT(""))
+			{
+				if (event_name == TEXT("mouseclick")) lingering_mouseclick_handler = handler;
+				else if (event_name == TEXT("mousedown")) lingering_mousedown_handler = handler;
+				if (event_name == TEXT("mouseclick")) has_lingering_mouseclick_handler = true;
+				else if (event_name == TEXT("mousedown")) has_lingering_mousedown_handler = true;
+
+				if (_sprites.size() != 1) return (ScriptScope*)NULL; //error bad def
+				//rect = (sf::IntRect)_first_sprite->getGlobalBounds();
+			}
+			else
+			{
+				auto x1 = raw->vals->next->vali();
+				auto y1 = raw->vals->next->next->vali();
+				auto x2 = raw->vals->next->next->next->vali();
+				auto y2 = raw->vals->next->next->next->next->vali();
+
+				auto topleft = sf::Vector2i(x1, y1);
+				auto bottomright = sf::Vector2i(x2, y2);
+				rect = sf::IntRect(topleft, bottomright - topleft);
+			}
 
 			if (event_name == TEXT("mouseclick"))
 			{ 
@@ -249,4 +280,48 @@ ScriptScope * Context::build_context(ScriptRaw *)
 	};
 
 	return scope;
+}
+
+void Context::prep()
+{
+	_draw_list.clear();
+	_first_sprite = NULL;
+
+	for (auto thing : _sprites)
+	{
+		auto sprite = ResourceManager::get_sprite(thing.sprite);
+		sprite->setPosition(thing.x * ResourceManager::scaling_factor().x, 
+					        thing.y * ResourceManager::scaling_factor().y);
+		_draw_list.push_back(sprite);
+		_first_sprite = sprite;
+	}
+
+	if (has_lingering_mouseclick_handler)
+	{
+		auto rect = (sf::IntRect)_first_sprite->getGlobalBounds();
+		rect.left /= ResourceManager::scaling_factor().x;
+		rect.top /= ResourceManager::scaling_factor().y;
+		rect.width /= ResourceManager::scaling_factor().x;
+		rect.height /= ResourceManager::scaling_factor().y;
+
+		add_mouseclick_handler(rect, lingering_mouseclick_handler);
+		has_lingering_mouseclick_handler = false;
+	}
+
+	if (has_lingering_mousedown_handler)
+	{
+		auto rect = (sf::IntRect)_first_sprite->getGlobalBounds();
+		add_mousedown_handler(rect, lingering_mousedown_handler);
+		has_lingering_mousedown_handler = false;
+	}
+
+	for (auto element : _inner_elements)
+	{
+		element->prep();
+	}
+}
+
+const bool& Context::only_handle_when_top_context()
+{
+	return _only_handle_when_top_context;
 }

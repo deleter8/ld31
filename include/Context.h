@@ -16,13 +16,26 @@ enum MouseEvent
 	MOUSE_CLICK
 };
 
+class SpriteThings
+{
+public:
+	string_t sprite;
+	int x;
+	int y;
+};
+
 class Context
 {
 private:
 
 	std::list<sf::Drawable*> _draw_list;
 	sf::Sprite * _first_sprite;
-	
+	std::list<SpriteThings> _sprites;
+	bool has_lingering_mouseclick_handler;
+	std::function<bool(MouseEvent)> lingering_mouseclick_handler;
+	bool has_lingering_mousedown_handler;
+	std::function<bool(MouseEvent)> lingering_mousedown_handler;
+	bool _only_handle_when_top_context;
 
 	std::list<std::pair<sf::IntRect, std::function<bool(MouseEvent)>>> _mouseclick_handlers;
 	std::list<std::pair<sf::IntRect, std::function<bool(MouseEvent)>>> _mousedown_handlers;
@@ -57,6 +70,8 @@ public:
 	void render(sf::RenderWindow& window);
 
 	ScriptScope * build_context(ScriptRaw *);
+	void prep();
+	const bool& only_handle_when_top_context();
 };
 
 #endif //__CONTEXT_______

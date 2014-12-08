@@ -40,25 +40,11 @@ int main()
 	sf::RenderWindow * window = NULL;
 	auto window_rect = sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(0, 0));
 
-	//script_runner->add_action(TEXT("seti"), [&](ActionVal * val){
-	//	context_manager->seti(val->vals, val->next->vali());
-	//	return ActionVal::EMPTY();
-	//});
-
-	//script_runner->add_action(TEXT("setf"), [&](ActionVal * val){
-	//	context_manager->setf(val->vals, val->next->valf());
-	//	return ActionVal::EMPTY();
-	//});
-
-	//script_runner->add_action(TEXT("sets"), [&](ActionVal * val){
-	//	context_manager->sets(val->vals, val->next->vals);
-	//	return ActionVal::EMPTY();
-	//});
-
 	script_runner->add_def(TEXT("def_context"), [&](ScriptRaw* raw){
 		auto context = new Context();
+		auto local_scope = context->build_context(raw);
 		context_manager->add_context(raw->vals->vals, context);
-		return context->build_context(raw);
+		return local_scope;
 	});
 
 	script_runner->add_def(TEXT("def_resource"), [&](ScriptRaw* raw){
@@ -187,18 +173,21 @@ int main()
 		}
 
 		auto coords = sf::Mouse::getPosition(*window);
+		bool in_window = window_rect.contains(coords);
+		coords.x = coords.x / ResourceManager::scaling_factor().x;
+		coords.y = coords.y / ResourceManager::scaling_factor().y;
 		
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 		{
-			if (window_rect.contains(coords)) context_manager->handle_mousedown(coords.x, coords.y);
+			if (in_window) context_manager->handle_mousedown(coords.x, coords.y);
 			button_pressed = true;
 		}
 		else if (button_pressed)
 		{
 			button_pressed = false;
 			//todo: enhance with coords where button went down for drag and such
-			if (window_rect.contains(coords)) context_manager->handle_mouseclick(coords.x, coords.y);
-			if (window_rect.contains(coords)) std::cout << coords.x << ", " << coords.y << std::endl;
+			if (in_window) context_manager->handle_mouseclick(coords.x, coords.y);
+			if (in_window) std::cout << coords.x << ", " << coords.y << std::endl;
 		}
 		
 		window->clear();

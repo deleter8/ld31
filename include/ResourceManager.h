@@ -68,6 +68,8 @@ public:
 	
 	static ScriptScope * build_resource(ScriptRaw *);
 
+	static const sf::Vector2f& scaling_factor();
+
 	static void clean();
 };
 

@@ -21,6 +21,7 @@ void ContextManager::add_context(string_t name, Context * context)
 
 void ContextManager::push_context(string_t name)
 {
+	_contexts[name]->prep();
 	_context_stack.push_back(_contexts[name]);
 }
 
@@ -31,9 +32,13 @@ void ContextManager::pop_context()
 
 bool ContextManager::handle_mouseclick(int x, int y)
 {
-	for (auto it = _context_stack.rbegin(); it != _context_stack.rend(); it++)
+	auto top_context = _context_stack.rbegin();
+	for (auto it = top_context; it != _context_stack.rend(); it++)
 	{
-		if ((*it)->handle_mouseclick(x, y)) return true;
+		if (!(*it)->only_handle_when_top_context() || it == top_context)
+		{
+			if ((*it)->handle_mouseclick(x, y)) return true;
+		}
 	}
 
 	return false;
@@ -41,9 +46,13 @@ bool ContextManager::handle_mouseclick(int x, int y)
 
 bool ContextManager::handle_mousedown(int x, int y)
 {
-	for (auto it = _context_stack.rbegin(); it != _context_stack.rend(); it++)
+	auto top_context = _context_stack.rbegin();
+	for (auto it = top_context; it != _context_stack.rend(); it++)
 	{
-		if ((*it)->handle_mousedown(x, y)) return true;
+		if (!(*it)->only_handle_when_top_context() || it == top_context)
+		{
+			if ((*it)->handle_mousedown(x, y)) return true;
+		}
 	}
 
 	return false;
@@ -51,9 +60,13 @@ bool ContextManager::handle_mousedown(int x, int y)
 
 bool ContextManager::handle_keypress(sf::Keyboard::Key key)
 {
-	for (auto it = _context_stack.rbegin(); it != _context_stack.rend(); it++)
+	auto top_context = _context_stack.rbegin();
+	for (auto it = top_context; it != _context_stack.rend(); it++)
 	{
-		if ((*it)->handle_keypress(key)) return true;
+		if (!(*it)->only_handle_when_top_context() || it == top_context)
+		{
+			if ((*it)->handle_keypress(key)) return true;
+		}
 	}
 
 	return false;
@@ -61,9 +74,13 @@ bool ContextManager::handle_keypress(sf::Keyboard::Key key)
 
 bool ContextManager::handle_keyheld(sf::Keyboard::Key key)
 {
-	for (auto it = _context_stack.rbegin(); it != _context_stack.rend(); it++)
+	auto top_context = _context_stack.rbegin();
+	for (auto it = top_context; it != _context_stack.rend(); it++)
 	{
-		if ((*it)->handle_keypress(key)) return true;
+		if (!(*it)->only_handle_when_top_context() || it == top_context)
+		{
+			if ((*it)->handle_keyheld(key)) return true;
+		}
 	}
 
 	return false;
@@ -72,44 +89,26 @@ bool ContextManager::handle_keyheld(sf::Keyboard::Key key)
 
 void ContextManager::render(sf::RenderWindow& window)
 {
+	auto top_context = _context_stack.back();
 	for (auto context : _context_stack)
 	{
-		context->render(window);
+		if (!context->only_handle_when_top_context() || context == top_context)
+		{
+			context->render(window);
+		}
 	}
 }
 
 const std::list<sf::Keyboard::Key> ContextManager::Keys()
 {
+	_keys.clear();
+	for (auto context : _context_stack)
+	{
+		for (auto key : context->Keys())
+		{
+			_keys.push_back(key);
+		}
+	}
+	_keys.unique();
 	return _keys;
 }
-
-
-//int ContextManager::geti(string_t name)
-//{
-//	return _int_vals[name];
-//}
-//
-//float ContextManager::getf(string_t name)
-//{
-//	return _float_vals[name];
-//}
-//
-//string_t ContextManager::gets(string_t name)
-//{
-//	return _string_vals[name];
-//}
-//
-//void ContextManager::seti(string_t name, int value)
-//{
-//	_int_vals[name] = value;
-//}
-//
-//void ContextManager::setf(string_t name, float value)
-//{
-//	_float_vals[name] = value;
-//}
-//
-//void ContextManager::sets(string_t name, string_t value)
-//{
-//	_string_vals[name] = value;
-//}

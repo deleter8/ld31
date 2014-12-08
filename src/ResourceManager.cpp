@@ -27,17 +27,23 @@ sf::Sprite * ResourceManager::get_sprite(string_t sprite_name)
 
 	auto sprite = new sf::Sprite();
 	sprite->setTexture(*tex.texture);
-	auto start_x = sprite_def.sheet_index_x * tex.sprite_width;
-	auto start_y = sprite_def.sheet_index_y * tex.sprite_height;
-	auto width = tex.sprite_width * sprite_def.sheet_width;
-	auto height = tex.sprite_height * sprite_def.sheet_height;
-	sprite->setTextureRect(sf::IntRect(start_x, start_y, width, height));
+	
+	if (tex.sprite_width != 0 && tex.sprite_height != 0)
+	{
+		auto start_x = sprite_def.sheet_index_x * tex.sprite_width;
+		auto start_y = sprite_def.sheet_index_y * tex.sprite_height;
+		auto width = tex.sprite_width * sprite_def.sheet_width;
+		auto height = tex.sprite_height * sprite_def.sheet_height;
+		sprite->setTextureRect(sf::IntRect(start_x, start_y, width, height));
+		
+		//todo: right now this means "texture" sprites can't have center origin, fix
+		if (sprite_def.center_origin)
+		{
+			sprite->setOrigin(sf::Vector2f(width / 2.f, height / 2.f));
+		}
+	}
 	sprite->setScale(_inst->_scaling_factor);
 
-	if (sprite_def.center_origin)
-	{
-		sprite->setOrigin(sf::Vector2f(width / 2.f, height / 2.f));
-	}
 	return sprite;
 }
 
@@ -170,6 +176,8 @@ ScriptScope * ResourceManager::build_resource(ScriptRaw * raw)
 	{
 		_inst->load_texture_if_needed(raw->vals->next->vals);
 		TextureWrapper * texture_wrapper = &_inst->_textures[raw->vals->next->vals];
+		texture_wrapper->sprite_width = 0;
+		texture_wrapper->sprite_height = 0;
 		scope->defs[TEXT("def_attrib")] = [texture_wrapper](ScriptRaw* raw){
 			string_t attrib_name = raw->vals->vals;
 			if (attrib_name == TEXT("sprite_dim"))
@@ -223,4 +231,9 @@ ScriptScope * ResourceManager::build_resource(ScriptRaw * raw)
 		};
 	}
 	return scope;
+}
+
+const sf::Vector2f& ResourceManager::scaling_factor()
+{
+	return _inst->_scaling_factor;
 }

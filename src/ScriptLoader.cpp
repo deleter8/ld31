@@ -37,8 +37,9 @@ ScriptRaw * load_script(string_t filename)
 		{ 
 			//just fyi to the future: this *might* not handle really weird cases with unicode
 			if (!not_just_spaces && c == '#') is_comment = true;
-			if (c != ' ') not_just_spaces = true; 
-			else if (!not_just_spaces) space_count++;			
+			if (c != ' ' && c != '\t') not_just_spaces = true; 
+			else if (!not_just_spaces) space_count++;
+			if (!not_just_spaces && c == '\t') space_count++; //tabs == 2 spaces
 		}
 		if (line.length() > 0 && not_just_spaces && !is_comment)
 		{
