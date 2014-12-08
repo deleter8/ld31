@@ -214,7 +214,6 @@ ScriptScope * Context::build_context(ScriptRaw *)
 				else if (event_name == TEXT("mousedown")) has_lingering_mousedown_handler = true;
 
 				if (_sprites.size() != 1) return (ScriptScope*)NULL; //error bad def
-				//rect = (sf::IntRect)_first_sprite->getGlobalBounds();
 			}
 			else
 			{

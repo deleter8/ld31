@@ -13,10 +13,6 @@ class ContextManager
 {
 private:
 
-	//std::unordered_map<string_t, int> _int_vals;
-	//std::unordered_map<string_t, float> _float_vals;
-	//std::unordered_map<string_t, string_t> _string_vals;
-
 	std::unordered_map<string_t, Context*> _contexts;
 	std::list<Context*> _context_stack;
 
@@ -39,14 +35,6 @@ public:
 	void render(sf::RenderWindow& window);
 
 	const std::list<sf::Keyboard::Key> Keys();
-
-	//int geti(string_t name);
-	//float getf(string_t name);
-	//string_t gets(string_t name);
-
-	//void seti(string_t name, int value);
-	//void setf(string_t name, float value);
-	//void sets(string_t name, string_t value);
 };
 
 #endif //__CONTEXT_MANAGER__

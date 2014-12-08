@@ -10,25 +10,6 @@
 #include "ContextManager.h"
 #include "ScriptRunner.h"
 
-
-void crawl_script(ScriptRaw * script, string_t prelim)
-{
-	std::cout << ws2s(prelim + script->line_def) << " ";
-	ActionVal * vals = script->vals;
-	while (vals->vals != TEXT(""))
-	{
-		std::cout << ws2s(vals->vals) << ",";
-		if (vals->next == NULL) break;
-		vals = vals->next.get();
-	}
-	std::cout << std::endl;
-
-	for (auto line : script->inner_lines)
-	{
-		crawl_script(line, prelim + TEXT("->"));
-	}
-}
-
 int main()
 {
 	auto context_manager = new ContextManager();
@@ -85,50 +66,6 @@ int main()
 
 	auto script = ResourceManager::get_script(TEXT("main"));
 	script_runner->run(script);
-	
-	//crawl_script(script, TEXT(""));
-
-	////hacked in
-	//window = new sf::RenderWindow(sf::VideoMode(1024, 576), TEXT("Dare teh thirty-first"));
-	//window_rect = sf::IntRect(sf::Vector2i(0, 0), (sf::Vector2i)window->getSize());
-
-	//while (window == NULL)
-	//{
-	//	sf::sleep(sf::milliseconds(10));
-	//}
-
-	//start going away:
-				//auto menu_context = new Context();
-
-				//auto title_screen = ResourceManager::get_texture(TEXT("title"));
-				//auto title_options = ResourceManager::get_texture(TEXT("menu_options"));
-				//auto options_size = title_options->getLocalBounds();
-				//title_options->setOrigin(sf::Vector2f(options_size.width/2.f, options_size.height/2.f));
-				//title_options->setScale(sf::Vector2f(.5f, .5f));
-				//title_options->setPosition(512, 350);
-	
-				//menu_context->add_render_object(title_screen);
-				//menu_context->add_render_object(title_options);
-
-				//auto menu_start_topleft = sf::Vector2i(450, 227);
-				//auto menu_start_bottomright = sf::Vector2i(575, 275);
-				//auto menu_start_rect = sf::IntRect(menu_start_topleft, menu_start_bottomright - menu_start_topleft);	
-				//menu_context->add_mouseclick_handler(menu_start_rect, [](MouseEvent ev){return true; });
-
-				//auto menu_settings_topleft = sf::Vector2i(411, 316);
-				//auto menu_settings_bottomright = sf::Vector2i(615, 373);
-				//auto menu_settings_rect = sf::IntRect(menu_settings_topleft, menu_settings_bottomright - menu_settings_topleft);
-				//menu_context->add_mouseclick_handler(menu_settings_rect, [](MouseEvent ev){return true; });
-
-				//auto menu_quit_topleft = sf::Vector2i(456, 405);
-				//auto menu_quit_bottomright = sf::Vector2i(569, 463);
-				//auto menu_quit_rect = sf::IntRect(menu_quit_topleft, menu_quit_bottomright - menu_quit_topleft);
-				//menu_context->add_mouseclick_handler(menu_quit_rect, [&window](MouseEvent ev){
-				//	window->close();
-				//	return true;
-				//});
-
-	//end going away
 	
     auto test_sound = ResourceManager::get_sound(TEXT("jump2"));
 
