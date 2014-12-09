@@ -30,7 +30,7 @@ int main()
 	});
 
 	script_runner->add_def(TEXT("def_resource"), [&](ScriptRaw* raw){
-		return ResourceManager::build_resource(raw);		
+		return ResourceManager::build_resource(raw);
 	});
 
 	script_runner->add_action(TEXT("push_context"), [&](ActionVal * val){

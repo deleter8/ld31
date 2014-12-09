@@ -79,7 +79,7 @@ sf::Music * ResourceManager::get_music(string_t music)
 
 sf::Text * ResourceManager::get_text(string_t id)
 {
-	return new sf::Text(_inst->_text[id], *_inst->_default_font, (int)(30.f/_inst->_scaling_factor.x));
+	return new sf::Text(_inst->_text[id], *_inst->_default_font, (int)(30.f * _inst->_scaling_factor.x));
 }
 
 ScriptRaw * ResourceManager::get_script(string_t script_name)

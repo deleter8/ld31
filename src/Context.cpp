@@ -321,7 +321,7 @@ void Context::prep()
 			auto text = ResourceManager::get_text(thing.thing_name);
 			if (thing.font_size > 0)
 			{
-				text->setCharacterSize((int)((float)thing.font_size / ResourceManager::scaling_factor().x));
+				text->setCharacterSize((int)((float)thing.font_size * ResourceManager::scaling_factor().x));
 			}
 			text->setPosition(thing.x * ResourceManager::scaling_factor().x,
 				              thing.y * ResourceManager::scaling_factor().y);

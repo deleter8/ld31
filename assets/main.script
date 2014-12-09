@@ -10,10 +10,11 @@ def_context main_frame
   def_attrib sprite title 0 0
   def_attrib sprite city_background -700 420
   def_attrib sprite game_title 2050 1175
+  #def_attrib text city 2055 1100 253 #don't like how this looks
 
 def_context main_menu
   def_element start_label
-    def_attrib text start 10 -25 25
+    def_attrib text start 10 -25 156
     def_handler mouseclick
       play_sound menu_click
       run_story start_game
@@ -25,14 +26,14 @@ def_context main_menu
       def_step
         trigger_ease size sine .7 1 1000
   def_element settings_label
-    def_attrib text settings 10 175 25
+    def_attrib text settings 10 175 156
     def_handler mouseclick
       play_sound menu_click
       pop_context main_menu
       push_context settings_menu
 
   def_element quit_label
-    def_attrib text quit 10 365 25
+    def_attrib text quit 10 365 156
     def_handler mouseclick
       play_sound menu_click
       quit_game
@@ -55,33 +56,33 @@ def_context main_menu
 
 def_context settings_menu
   def_element musiclevel_label
-    def_attrib text music 10 -25 25
+    def_attrib text music 10 -25 156
     #def_attrib value music_volume 1530 560
   def_element musiclevel_down
-    def_attrib text lt 600 -25 25
+    def_attrib text lt 600 -25 156
     def_handler mouseclick
       lower music_volume
   def_element musiclevel_up
-    def_attrib text gt 800 -25 25
+    def_attrib text gt 800 -25 156
     def_handler mouseclick
       raise music_volume
   
   def_element soundlevel_label
-    def_attrib text sounds 10 175 25
+    def_attrib text sounds 10 175 156
     #def_attrib value audio_volume 1530 860
   def_element soundlevel_down
-    def_attrib text lt 600 175 25
+    def_attrib text lt 600 175 156
     def_handler mouseclick
       lower audio_volume
       play_sound menu_click
   def_element soundlevel_up
-    def_attrib text gt 800 175 25
+    def_attrib text gt 800 175 156
     def_handler mouseclick
       raise audio_volume
       play_sound menu_click
 
   def_element back_label
-    def_attrib text back 10 365 25
+    def_attrib text back 10 365 156
     def_handler mouseclick
       play_sound menu_click
       pop_context settings_menu

@@ -14,7 +14,7 @@ string_t restore_string_if_needed(string_t from)
 	if (from.size() == 0) return from;
 	if (from[0] != '"') return from;
 	
-	std::replace(from.begin(), from.end(), '_', ' ');
+	std::replace(from.begin(), from.end(), '\x1', ' ');
 	return from.substr(1, from.size() - 2);
 };
 
@@ -73,7 +73,7 @@ ScriptRaw * load_script(string_t filename)
 				//string should now be terminating
 				if (start_string != line.end())
 				{
-					std::replace(start_string, it, ' ', '_');
+					std::replace(start_string, it, ' ', '\x1');
 					start_string = line.end();
 				}
 				else
