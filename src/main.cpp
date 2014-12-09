@@ -60,7 +60,6 @@ int main()
 		int w = val->vali();
 		int h = val->next->vali();
 		string_t title = val->next->next->vals;
-		std::replace(title.begin(), title.end(), '_', ' ');
 		window = new sf::RenderWindow(sf::VideoMode(w, h), title);
 		window_rect = sf::IntRect(sf::Vector2i(0, 0), (sf::Vector2i)window->getSize());
 		ResourceManager::set_screen_res(w, h);

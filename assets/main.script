@@ -2,7 +2,7 @@
 set g_window_w 1024
 set g_window_h 576
 
-open_window $g_window_w $g_window_h Dare_the_Thirty_First
+open_window $g_window_w $g_window_h "Dare the Thirty First"
 
 import resources
 
@@ -73,10 +73,12 @@ def_context settings_menu
     def_attrib text lt 600 175 25
     def_handler mouseclick
       lower audio_volume
+      play_sound menu_click
   def_element soundlevel_up
     def_attrib text gt 800 175 25
     def_handler mouseclick
       raise audio_volume
+      play_sound menu_click
 
   def_element back_label
     def_attrib text back 10 365 25
@@ -87,6 +89,7 @@ def_context settings_menu
 
   def_handler keypress 36
     pop_context settings_menu
+    push_context main_menu
 
 def_context game
   def_handler keypress 0

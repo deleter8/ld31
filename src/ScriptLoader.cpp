@@ -9,6 +9,15 @@
 #include "fstream_t.h"
 #include "ScriptRaw.h"
 
+string_t restore_string_if_needed(string_t from)
+{
+	if (from.size() == 0) return from;
+	if (from[0] != '"') return from;
+	
+	std::replace(from.begin(), from.end(), '_', ' ');
+	return from.substr(1, from.size() - 2);
+};
+
 ScriptRaw * load_script(string_t filename)
 {
 	ifstream_t infile(filename);
@@ -92,11 +101,13 @@ ScriptRaw * load_script(string_t filename)
 			
 			ScriptRaw * script_line = new ScriptRaw(things[0]);
 			
+			
+
 			ActionVal * previous = NULL;
 			if (things.size() > 1)
 			{
 				previous = new ActionVal();
-				previous->vals = things[1];
+				previous->vals = restore_string_if_needed(things[1]);
 				script_line->vals = previous;
 			}
 			
@@ -105,7 +116,7 @@ ScriptRaw * load_script(string_t filename)
 				for (auto it = things.begin() + 2; it != things.end(); it++)
 				{
 					auto action_val = new ActionVal();
-					action_val->vals = (*it);
+					action_val->vals = restore_string_if_needed(*it);
 					
 					previous->next = std::shared_ptr<ActionVal>(action_val);
 
