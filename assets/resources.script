@@ -1,42 +1,20 @@
-def_resource font SourceSansPro-Bold
+def_resource font SourceSansPro-Regular
+set_default_font SourceSansPro-Regular
 
-set_default_font SourceSansPro-Bold
+import strings
 
 def_resource texture title
-
 def_resource sprite title
   def_attrib texture title
 
-def_resource texture menu_options 
-  def_attrib sprite_dim 750 150
+def_resource texture city_background_clean
+  def_attrib smooth false
+def_resource sprite city_background
+  def_attrib texture city_background_clean
 
-def_resource sprite menu_start
-  def_attrib texture menu_options 0 0
-  def_attrib center_origin
-
-def_resource sprite menu_settings
-  def_attrib texture menu_options 0 1
-  def_attrib center_origin
-
-def_resource sprite menu_resume
-  def_attrib texture menu_options 0 2
-  def_attrib center_origin
-
-def_resource sprite menu_quit
-  def_attrib texture menu_options 0 3
-  def_attrib center_origin
-
-def_resource sprite menu_soundlevel
-  def_attrib texture menu_options 0 4
-  def_attrib center_origin
-
-def_resource sprite menu_musiclevel
-  def_attrib texture menu_options 0 5
-  def_attrib center_origin
-
-def_resource sprite menu_back
-  def_attrib texture menu_options 0 6
-  def_attrib center_origin
+def_resource texture title_name
+def_resource sprite game_title
+  def_attrib texture title_name
 
 def_resource sound jump2
 def_resource sound menu_click

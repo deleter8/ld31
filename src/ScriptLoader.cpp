@@ -3,6 +3,7 @@
 #endif
 
 #include <list>
+#include <algorithm>
 
 #include "string_t.h"
 #include "fstream_t.h"
@@ -36,9 +37,12 @@ ScriptRaw * load_script(string_t filename)
 		//just fyi to the future: this *might* not handle really weird cases with unicode
 		// with all the char comparison shtuff
 		int char_count = 0;
-		for (auto c : line)
-		{ 
-			
+		
+		auto start_string = line.end();
+		
+		for (auto it = line.begin(); it != line.end(); it++)
+		{
+			auto c = *it;
 			if (c == '#')
 			{
 				if (!not_just_spaces)
@@ -54,6 +58,22 @@ ScriptRaw * load_script(string_t filename)
 			if (c != ' ' && c != '\t') not_just_spaces = true; 
 			else if (!not_just_spaces) space_count++;
 			if (!not_just_spaces && c == '\t') space_count++; //tabs == 2 spaces
+
+			if (c == '"')
+			{
+				//string should now be terminating
+				if (start_string != line.end())
+				{
+					std::replace(start_string, it, ' ', '_');
+					start_string = line.end();
+				}
+				else
+				{
+					start_string = it;
+				}
+			}
+
+			char_count++;
 		}
 		if (line.length() > 0 && not_just_spaces && !is_comment)
 		{

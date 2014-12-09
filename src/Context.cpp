@@ -169,12 +169,33 @@ ScriptScope * Context::build_context(ScriptRaw *)
 			string_t sprite_name = raw->vals->next->vals;
 			auto x = raw->vals->next->next->vali();
 			auto y = raw->vals->next->next->next->vali();
-			auto sprite_thing = SpriteThings();
-			sprite_thing.sprite = sprite_name;
-			sprite_thing.x = x;
-			sprite_thing.y = y;
-			_sprites.push_back(sprite_thing);
-		} 
+			auto display_thing = DisplayThings();
+			display_thing.thing_type = DisplayThings::SPRITE;
+			display_thing.thing_name = sprite_name;
+			display_thing.x = x;
+			display_thing.y = y;
+			_display_things.push_back(display_thing);
+		}
+		else if (attrib_name == TEXT("text"))
+		{
+			string_t text_name = raw->vals->next->vals;
+			auto x = raw->vals->next->next->vali();
+			auto y = raw->vals->next->next->next->vali();
+			auto display_thing = DisplayThings();
+			display_thing.thing_type = DisplayThings::TEXT;
+			display_thing.thing_name = text_name;
+			display_thing.x = x;
+			display_thing.y = y;
+			if (raw->vals->next->next->next->next != NULL && raw->vals->next->next->next->next->vals != TEXT(""))
+			{
+				display_thing.font_size = raw->vals->next->next->next->next->vali();
+			}
+			else
+			{
+				display_thing.font_size = -1;
+			}
+			_display_things.push_back(display_thing);
+		}
 		else if (attrib_name == TEXT("value"))
 		{
 			//TODO 
@@ -213,7 +234,7 @@ ScriptScope * Context::build_context(ScriptRaw *)
 				if (event_name == TEXT("mouseclick")) has_lingering_mouseclick_handler = true;
 				else if (event_name == TEXT("mousedown")) has_lingering_mousedown_handler = true;
 
-				if (_sprites.size() != 1) return (ScriptScope*)NULL; //error bad def
+				if (_display_things.size() != 1) return (ScriptScope*)NULL; //error bad def
 			}
 			else
 			{
@@ -284,33 +305,51 @@ ScriptScope * Context::build_context(ScriptRaw *)
 void Context::prep()
 {
 	_draw_list.clear();
-	_first_sprite = NULL;
-
-	for (auto thing : _sprites)
+	_context_dimensions = sf::FloatRect(0,0,0,0);
+	for (auto thing : _display_things)
 	{
-		auto sprite = ResourceManager::get_sprite(thing.sprite);
-		sprite->setPosition(thing.x * ResourceManager::scaling_factor().x, 
-					        thing.y * ResourceManager::scaling_factor().y);
-		_draw_list.push_back(sprite);
-		_first_sprite = sprite;
+		if (thing.thing_type == DisplayThings::SPRITE)
+		{
+			auto sprite = ResourceManager::get_sprite(thing.thing_name);
+			sprite->setPosition(thing.x * ResourceManager::scaling_factor().x,
+				                thing.y * ResourceManager::scaling_factor().y);
+			_draw_list.push_back(sprite);
+			_context_dimensions = sprite->getGlobalBounds();
+		}
+		else if (thing.thing_type == DisplayThings::TEXT)
+		{
+			auto text = ResourceManager::get_text(thing.thing_name);
+			if (thing.font_size > 0)
+			{
+				text->setCharacterSize((int)((float)thing.font_size / ResourceManager::scaling_factor().x));
+			}
+			text->setPosition(thing.x * ResourceManager::scaling_factor().x,
+				              thing.y * ResourceManager::scaling_factor().y);
+			_draw_list.push_back(text);
+			_context_dimensions = text->getGlobalBounds();
+		}
 	}
 
 	if (has_lingering_mouseclick_handler)
 	{
-		auto rect = (sf::IntRect)_first_sprite->getGlobalBounds();
+		auto rect = _context_dimensions;
 		rect.left /= ResourceManager::scaling_factor().x;
 		rect.top /= ResourceManager::scaling_factor().y;
 		rect.width /= ResourceManager::scaling_factor().x;
 		rect.height /= ResourceManager::scaling_factor().y;
 
-		add_mouseclick_handler(rect, lingering_mouseclick_handler);
+		add_mouseclick_handler((sf::IntRect)rect, lingering_mouseclick_handler);
 		has_lingering_mouseclick_handler = false;
 	}
 
 	if (has_lingering_mousedown_handler)
 	{
-		auto rect = (sf::IntRect)_first_sprite->getGlobalBounds();
-		add_mousedown_handler(rect, lingering_mousedown_handler);
+		auto rect = _context_dimensions;
+		rect.left /= ResourceManager::scaling_factor().x;
+		rect.top /= ResourceManager::scaling_factor().y;
+		rect.width /= ResourceManager::scaling_factor().x;
+		rect.height /= ResourceManager::scaling_factor().y;
+		add_mousedown_handler((sf::IntRect)rect, lingering_mousedown_handler);
 		has_lingering_mousedown_handler = false;
 	}
 

@@ -17,6 +17,7 @@ public:
 	sf::Texture * texture;
 	int sprite_width;
 	int sprite_height;
+	bool smooth;
 };
 
 class SpriteDef
@@ -28,6 +29,7 @@ public:
 	int sheet_width;
 	int sheet_height;
 	bool center_origin;
+	bool abs_coords;
 };
 
 class ResourceManager
@@ -41,6 +43,8 @@ private:
 	std::unordered_map<string_t, SpriteDef> _sprite_defs;
 	std::unordered_map<string_t, sf::SoundBuffer *> _soundbuffers;
 	std::unordered_map<string_t, ScriptRaw *> _scripts;
+	std::unordered_map<string_t, string_t> _text;
+
 	string_t _filepath;
 	sf::Vector2f _scaling_factor;
 	sf::Vector2i _internal_res;
@@ -64,6 +68,7 @@ public:
 	static sf::Music * get_music(string_t music);
 	static sf::Font * get_font(string_t font_name);
 	static ScriptRaw * get_script(string_t script_name);
+	static sf::Text * get_text(string_t id);
 
 	static void set_default_font(string_t font_name);
 	

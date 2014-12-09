@@ -16,12 +16,20 @@ enum MouseEvent
 	MOUSE_CLICK
 };
 
-class SpriteThings
+class DisplayThings
 {
 public:
-	string_t sprite;
+	enum DisplayThingType
+	{
+		SPRITE,
+		TEXT
+	};
+
+	DisplayThingType thing_type;
+	string_t thing_name;
 	int x;
 	int y;
+	int font_size;
 };
 
 class Context
@@ -29,8 +37,8 @@ class Context
 private:
 
 	std::list<sf::Drawable*> _draw_list;
-	sf::Sprite * _first_sprite;
-	std::list<SpriteThings> _sprites;
+	sf::FloatRect _context_dimensions;
+	std::list<DisplayThings> _display_things;
 	bool has_lingering_mouseclick_handler;
 	std::function<bool(MouseEvent)> lingering_mouseclick_handler;
 	bool has_lingering_mousedown_handler;

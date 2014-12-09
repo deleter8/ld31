@@ -8,26 +8,31 @@ import resources
 
 def_context main_frame
   def_attrib sprite title 0 0
+  def_attrib sprite city_background -700 420
+  def_attrib sprite game_title 2050 1175
 
 def_context main_menu
   def_element start_label
-    def_attrib sprite menu_start 1280 560
+    def_attrib text start 10 -25 25
     def_handler mouseclick
       play_sound menu_click
-      pop_context main_menu
-      pop_context main_frame
-      push_context game
-      
-
+      run_story start_game
+    def_handler mouseenter
+      loop_animation bouncy
+    def_handler mouseleave
+      stop_animation bouncy
+    def_animation bouncy
+      def_step
+        trigger_ease size sine .7 1 1000
   def_element settings_label
-    def_attrib sprite menu_settings 1280 860
+    def_attrib text settings 10 175 25
     def_handler mouseclick
       play_sound menu_click
       pop_context main_menu
       push_context settings_menu
 
   def_element quit_label
-    def_attrib sprite menu_quit 1280 1160
+    def_attrib text quit 10 365 25
     def_handler mouseclick
       play_sound menu_click
       quit_game
@@ -35,26 +40,46 @@ def_context main_menu
   def_handler keypress 36
     quit_game
 
+  def_animation show
+    def_step
+      trigger_ease size linear 0 1.1 300
+    def_step
+      size linear 1.1 1 27
+
+  def_animation hide
+    def_step
+      trigger_ease size linear 1 1.1 27
+    def_step
+      trigger_ease size linear 1.1 0 300
+      trigger_ease opacity linear 1 0 300
+
 def_context settings_menu
   def_element musiclevel_label
-    def_attrib sprite menu_musiclevel 1280 560
-    def_attrib value music_volume 1530 560
-
+    def_attrib text music 10 -25 25
+    #def_attrib value music_volume 1530 560
+  def_element musiclevel_down
+    def_attrib text lt 600 -25 25
+    def_handler mouseclick
+      lower music_volume
+  def_element musiclevel_up
+    def_attrib text gt 800 -25 25
+    def_handler mouseclick
+      raise music_volume
+  
   def_element soundlevel_label
-    def_attrib sprite menu_soundlevel 1280 860
-    def_attrib value audio_volume 1530 860
-
-  def_handler mouseclick 1405 525 1480 595
-    lower music_volume
-  def_handler mouseclick 1580 525 1655 595
-    raise music_volume
-  def_handler mouseclick 1405 825 1480 895
-    lower audio_volume
-  def_handler mouseclick 1580 825 1655 895
-    raise audio_volume
+    def_attrib text sounds 10 175 25
+    #def_attrib value audio_volume 1530 860
+  def_element soundlevel_down
+    def_attrib text lt 600 175 25
+    def_handler mouseclick
+      lower audio_volume
+  def_element soundlevel_up
+    def_attrib text gt 800 175 25
+    def_handler mouseclick
+      raise audio_volume
 
   def_element back_label
-    def_attrib sprite menu_back 1280 1160
+    def_attrib text back 10 365 25
     def_handler mouseclick
       play_sound menu_click
       pop_context settings_menu
@@ -67,9 +92,37 @@ def_context game
   def_handler keypress 0
     play_sound jump2
   def_handler keypress 36
-    pop_context
+    #pop_context
+    #push_context main_frame
+    #push_context main_menu
+    run_story end_game
+
+
+def_story init_menu
+  def_step
     push_context main_frame
     push_context main_menu
+    run_animation main_menu show
+
+def_story start_game
+  def_step
+    run_animation main_menu hide
+  def_step
+    pop_context main_menu
+    pop_context main_frame
+  def_step
+    push_context game
+    run_animation game show
+
+def_story end_game
+  def_step
+    run_animation game hide
+  def_step
+    pop_context game
+    run_story init_menu
+
 
 push_context main_frame
 push_context main_menu
+
+run_story init_menu
