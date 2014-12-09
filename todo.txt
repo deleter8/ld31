@@ -1,0 +1,20 @@
+[x]def_context
+[x]  def_attrib
+[x]  def_handler
+[ ]  def_anim
+[ ]    def_step
+[x]  def_element
+[x]    def_attrib
+[x]    def_handler
+[x]def_resource
+[x]  def_attrib
+[x]def_seq
+[x]  def_step
+
+[x]push_context
+[x]pop_context
+[ ]trigger_ease
+[x]run_seq
+[ ]run_anim
+[ ]loop_anim
+[ ]stop_anim

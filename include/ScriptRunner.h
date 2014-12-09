@@ -24,6 +24,7 @@ public:
 
 	ScriptRunner();
 
+	void add_async_action(string_t name, std::function<void(ActionVal*, std::function<void()>)> handler);
 	void add_action(string_t name, std::function<ActionVal(ActionVal*)> handler);
 	void add_def(string_t name, std::function<ScriptScope*(ScriptRaw*)> handler);
 

@@ -8,11 +8,14 @@
 #include "ResourceManager.h"
 #include "Context.h"
 #include "ContextManager.h"
+#include "SequenceManager.h"
 #include "ScriptRunner.h"
+#include "ExecutionManager.h"
 
 int main()
 {
 	auto context_manager = new ContextManager();
+	auto seq_manager = new SequenceManager();
 	auto script_runner = new ScriptRunner();
 
 	string_t asset_path = TEXT("../assets/");
@@ -31,6 +34,17 @@ int main()
 
 	script_runner->add_def(TEXT("def_resource"), [&](ScriptRaw* raw){
 		return ResourceManager::build_resource(raw);
+	});
+
+	script_runner->add_def(TEXT("def_seq"), [&](ScriptRaw* raw){
+		auto seq = new Sequence();
+		auto local_scope = seq->build_sequence(raw);
+		seq_manager->add_sequence(raw->vals->vals, seq);
+		return local_scope;
+	});
+
+	script_runner->add_async_action(TEXT("run_seq"), [&](ActionVal * val, std::function<void()> done){
+		seq_manager->run_sequence(val->vals, done);
 	});
 
 	script_runner->add_action(TEXT("push_context"), [&](ActionVal * val){
@@ -121,8 +135,8 @@ int main()
 
 			auto coords = sf::Mouse::getPosition(*window);
 			bool in_window = window_rect.contains(coords);
-			coords.x = coords.x / ResourceManager::scaling_factor().x;
-			coords.y = coords.y / ResourceManager::scaling_factor().y;
+			coords.x = (int) ((float) coords.x / ResourceManager::scaling_factor().x);
+			coords.y = (int)((float) coords.y / ResourceManager::scaling_factor().y);
 
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
@@ -141,6 +155,7 @@ int main()
 			context_manager->render(*window);
 			window->display();
 		}
+		ExecutionManager::execute();
 		sf::sleep(sf::milliseconds(1));
 	}
 

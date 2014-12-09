@@ -14,11 +14,14 @@
     <ClCompile Include="..\src\ActionVal.cpp" />
     <ClCompile Include="..\src\Context.cpp" />
     <ClCompile Include="..\src\ContextManager.cpp" />
+    <ClCompile Include="..\src\ExecutionManager.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\ResourceManager.cpp" />
     <ClCompile Include="..\src\ScriptLoader.cpp" />
     <ClCompile Include="..\src\ScriptRunner.cpp" />
     <ClCompile Include="..\src\ScriptScope.cpp" />
+    <ClCompile Include="..\src\Sequence.cpp" />
+    <ClCompile Include="..\src\SequenceManager.cpp" />
     <ClCompile Include="..\src\Transition.cpp" />
     <ClCompile Include="..\src\TransitionManager.cpp" />
   </ItemGroup>
@@ -26,11 +29,14 @@
     <ClInclude Include="..\include\ActionVal.h" />
     <ClInclude Include="..\include\Context.h" />
     <ClInclude Include="..\include\ContextManager.h" />
+    <ClInclude Include="..\include\ExecutionManager.h" />
     <ClInclude Include="..\include\fstream_t.h" />
     <ClInclude Include="..\include\ResourceManager.h" />
     <ClInclude Include="..\include\ScriptScope.h" />
     <ClInclude Include="..\include\ScriptRaw.h" />
     <ClInclude Include="..\include\ScriptRunner.h" />
+    <ClInclude Include="..\include\Sequence.h" />
+    <ClInclude Include="..\include\SequenceManager.h" />
     <ClInclude Include="..\include\string_t.h" />
     <ClInclude Include="..\include\Transition.h" />
     <ClInclude Include="..\include\TransitionManager.h" />

@@ -17,20 +17,19 @@ def_context main_menu
     def_attrib text start 10 -25 156
     def_handler mouseclick
       play_sound menu_click
-      run_story start_game
+      run_seq start_game
     def_handler mouseenter
-      loop_animation bouncy
+      loop_anim bouncy
     def_handler mouseleave
-      stop_animation bouncy
-    def_animation bouncy
+      stop_anim bouncy
+    def_anim bouncy
       def_step
         trigger_ease size sine .7 1 1000
   def_element settings_label
     def_attrib text settings 10 175 156
     def_handler mouseclick
       play_sound menu_click
-      pop_context main_menu
-      push_context settings_menu
+      run_seq main_to_settings
 
   def_element quit_label
     def_attrib text quit 10 365 156
@@ -41,13 +40,13 @@ def_context main_menu
   def_handler keypress 36
     quit_game
 
-  def_animation show
+  def_anim show
     def_step
       trigger_ease size linear 0 1.1 300
     def_step
       size linear 1.1 1 27
 
-  def_animation hide
+  def_anim hide
     def_step
       trigger_ease size linear 1 1.1 27
     def_step
@@ -85,48 +84,54 @@ def_context settings_menu
     def_attrib text back 10 365 156
     def_handler mouseclick
       play_sound menu_click
-      pop_context settings_menu
-      push_context main_menu
+      run_seq settings_to_main
 
   def_handler keypress 36
-    pop_context settings_menu
-    push_context main_menu
+    run_seq settings_to_main
 
 def_context game
   def_handler keypress 0
     play_sound jump2
   def_handler keypress 36
-    #pop_context
-    #push_context main_frame
-    #push_context main_menu
-    run_story end_game
+    run_seq end_game
 
-
-def_story init_menu
+def_seq init_menu
   def_step
     push_context main_frame
     push_context main_menu
-    run_animation main_menu show
+    run_anim main_menu show
 
-def_story start_game
+def_seq main_to_settings
   def_step
-    run_animation main_menu hide
+    run_anim main_menu hide
+  def_step
+    pop_context main_menu  
+    push_context settings_menu
+    run_anim settings_menu show
+
+def_seq settings_to_main
+  def_step
+    run_anim settings_menu hide
+  def_step
+    pop_context settings_menu
+    push_context main_menu
+    run_anim main_menu show
+
+def_seq start_game
+  def_step
+    run_anim main_menu hide
   def_step
     pop_context main_menu
     pop_context main_frame
   def_step
     push_context game
-    run_animation game show
+    run_anim game show
 
-def_story end_game
+def_seq end_game
   def_step
-    run_animation game hide
+    run_anim game hide
   def_step
     pop_context game
-    run_story init_menu
+    run_seq init_menu
 
-
-push_context main_frame
-push_context main_menu
-
-run_story init_menu
+run_seq init_menu

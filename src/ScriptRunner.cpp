@@ -1,6 +1,6 @@
 #include "ScriptRunner.h"
 #include "ResourceManager.h"
-
+#include "ExecutionManager.h"
 
 ScriptRunner::ScriptRunner()
 {
@@ -15,6 +15,11 @@ ScriptRunner::ScriptRunner()
 	};
 
 	_scopes.push_back(_base_scope);
+}
+
+void ScriptRunner::add_async_action(string_t name, std::function<void(ActionVal*, std::function<void()>)> handler)
+{
+	_base_scope->async_actions[name] = handler;
 }
 
 void ScriptRunner::add_action(string_t name, std::function<ActionVal(ActionVal*)> handler)
@@ -63,7 +68,42 @@ void ScriptRunner::parse(ScriptRaw * script)
 
 			if ((*it)->actions.find(cmd) != (*it)->actions.end())
 			{
-				_scopes.back()->statements->push_back(script_statement_t((*it)->actions[cmd], script->vals));
+				if (_scopes.back()->statements != NULL)
+				{
+					_scopes.back()->statements->push_back(script_statement_t((*it)->actions[cmd], script->vals));
+				}
+				else if (_scopes.back()->async_statements != NULL)
+				{
+					//massage sync -> async
+					auto action = (*it)->actions[cmd];
+					_scopes.back()->async_statements->push_back(script_async_statement_t(
+						[action](ActionVal* vals, std::function<void()> done){
+							action(vals);
+							ExecutionManager::RunDeferred(done);
+						}						
+						, script->vals));
+				}
+				handled = true;
+				break;
+			}
+
+			if ((*it)->async_actions.find(cmd) != (*it)->async_actions.end())
+			{
+				if (_scopes.back()->statements != NULL)
+				{
+					//massage async -> sync
+					auto async_action = (*it)->async_actions[cmd];
+					_scopes.back()->statements->push_back(script_statement_t(
+						[async_action](ActionVal * vals){
+							async_action(vals, ExecutionManager::thunk);
+							return ActionVal::EMPTY();
+						}
+						, script->vals));
+				}
+				else if (_scopes.back()->async_statements != NULL)
+				{
+					_scopes.back()->async_statements->push_back(script_async_statement_t((*it)->async_actions[cmd], script->vals));
+				}
 				handled = true;
 				break;
 			}
