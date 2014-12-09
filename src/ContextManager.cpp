@@ -113,3 +113,23 @@ const std::list<sf::Keyboard::Key> ContextManager::Keys()
 	_keys.unique();
 	return _keys;
 }
+
+Context * ContextManager::get_context(string_t name)
+{
+	if (_contexts.find(name) != _contexts.end())
+	{
+		return _contexts[name];
+	}
+	else
+	{
+		for (auto context : _contexts)
+		{
+			if (name.find(context.first) == 0)
+			{
+				return _contexts[context.first]->get_inner_element(name);
+			}
+		}
+	}
+
+	return NULL;
+}

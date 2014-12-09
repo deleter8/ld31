@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\ActionScopeManager.cpp" />
     <ClCompile Include="..\src\ActionVal.cpp" />
     <ClCompile Include="..\src\Context.cpp" />
     <ClCompile Include="..\src\ContextManager.cpp" />
@@ -22,15 +23,17 @@
     <ClCompile Include="..\src\ScriptScope.cpp" />
     <ClCompile Include="..\src\Sequence.cpp" />
     <ClCompile Include="..\src\SequenceManager.cpp" />
-    <ClCompile Include="..\src\Transition.cpp" />
-    <ClCompile Include="..\src\TransitionManager.cpp" />
+    <ClCompile Include="..\src\Easing.cpp" />
+    <ClCompile Include="..\src\EasingManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\ActionScopeManager.h" />
     <ClInclude Include="..\include\ActionVal.h" />
     <ClInclude Include="..\include\Context.h" />
     <ClInclude Include="..\include\ContextManager.h" />
     <ClInclude Include="..\include\ExecutionManager.h" />
     <ClInclude Include="..\include\fstream_t.h" />
+    <ClInclude Include="..\include\IEasingTarget.h" />
     <ClInclude Include="..\include\ResourceManager.h" />
     <ClInclude Include="..\include\ScriptScope.h" />
     <ClInclude Include="..\include\ScriptRaw.h" />
@@ -38,8 +41,8 @@
     <ClInclude Include="..\include\Sequence.h" />
     <ClInclude Include="..\include\SequenceManager.h" />
     <ClInclude Include="..\include\string_t.h" />
-    <ClInclude Include="..\include\Transition.h" />
-    <ClInclude Include="..\include\TransitionManager.h" />
+    <ClInclude Include="..\include\Easing.h" />
+    <ClInclude Include="..\include\EasingManager.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{171B2F6F-A551-4DE4-90D4-B7353C1A244B}</ProjectGuid>

@@ -35,6 +35,8 @@ public:
 	void render(sf::RenderWindow& window);
 
 	const std::list<sf::Keyboard::Key> Keys();
+
+	Context * get_context(string_t name);
 };
 
 #endif //__CONTEXT_MANAGER__

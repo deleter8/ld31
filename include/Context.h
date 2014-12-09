@@ -36,7 +36,12 @@ class Context
 {
 private:
 
+	string_t _name;
 	std::list<sf::Drawable*> _draw_list;
+	std::list<sf::Transformable*> _transform_list;
+	std::list<sf::Text*> _text_list;
+	std::list<sf::Sprite*> _sprite_list;
+
 	sf::FloatRect _context_dimensions;
 	std::list<DisplayThings> _display_things;
 	bool has_lingering_mouseclick_handler;
@@ -57,11 +62,16 @@ private:
 
 	void add_inner_element(string_t name, Context * element);
 
+	void add_render_object(sf::Drawable * object);
+
+	void step_scale(float val);
+	void step_scalex(float val);
+	void step_scaley(float val);
+	void step_opacity(float val);
+
 public:
 
-	Context();
-
-	void add_render_object(sf::Drawable * object);
+	Context(string_t name);
 
 	void add_mouseclick_handler(sf::IntRect region, std::function<bool(MouseEvent)> handler);
 	void add_mousedown_handler(sf::IntRect region, std::function<bool(MouseEvent)> handler);
@@ -80,6 +90,10 @@ public:
 	ScriptScope * build_context(ScriptRaw *);
 	void prep();
 	const bool& only_handle_when_top_context();
+	
+	std::function<void(float)> get_step(string_t attrib);
+	const string_t& get_name();
+	Context * get_inner_element(string_t name);
 };
 
 #endif //__CONTEXT_______

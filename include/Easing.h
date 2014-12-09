@@ -1,9 +1,9 @@
-#ifndef __TRANSITION_GODZILLA__
-#define __TRANSITION_GODZILLA__
+#ifndef __EASING_GODZILLA__
+#define __EASING_GODZILLA__
 
 #include <functional>
 
-class Transition
+class Easing
 {
 private:
 
@@ -15,7 +15,7 @@ private:
 
 public:
 
-	Transition(float from, float to, int duration_ticks);
+	Easing(float from, float to, int duration_ticks);
 
 	void run(int ticks);
 
@@ -29,4 +29,4 @@ public:
 
 };
 
-#endif //__TRANSITION_GODZILLA__
+#endif //__EASING_GODZILLA__

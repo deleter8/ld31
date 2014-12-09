@@ -16,7 +16,7 @@ public:
 	SequenceStep();
 	script_async_statement_list_t async_statements;
 
-	void run(std::function<void()> done);
+	void run(std::function<void()> done, string_t target = TEXT(""));
 };
 
 class Sequence
@@ -28,7 +28,7 @@ private:
 	bool _already_running;
 public:
 	Sequence();
-	void run(std::function<void()> done);
+	void run(std::function<void()> done, string_t target = TEXT(""));
 	void loop();
 	void stop();//not instantaneous, has to wait for loop to come to end of _steps
 

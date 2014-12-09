@@ -1,6 +1,6 @@
-#include "Transition.h"
+#include "Easing.h"
 
-Transition::Transition(float from, float to, int duration_ticks)
+Easing::Easing(float from, float to, int duration_ticks)
 {
 	_from = from;
 	_val = from;
@@ -8,7 +8,7 @@ Transition::Transition(float from, float to, int duration_ticks)
 	_total_ticks = duration_ticks;
 }
 
-void Transition::run(int ticks)
+void Easing::run(int ticks)
 {
 	if (_current_ticks >= _total_ticks) return;
 
@@ -25,7 +25,7 @@ void Transition::run(int ticks)
 	}
 }
 
-bool Transition::done()
+bool Easing::done()
 {
 	return _current_ticks >= _total_ticks;
 }

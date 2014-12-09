@@ -100,8 +100,6 @@ ScriptRaw * load_script(string_t filename)
 			auto things = split(line.substr(space_count), ' ');
 			
 			ScriptRaw * script_line = new ScriptRaw(things[0]);
-			
-			
 
 			ActionVal * previous = NULL;
 			if (things.size() > 1)

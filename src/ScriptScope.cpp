@@ -8,4 +8,5 @@ ScriptScope::ScriptScope()
 	async_actions = std::unordered_map<string_t, script_async_action_t>();
 	statements = NULL;
 	async_statements = NULL;
+	scope_target = TEXT("");
 }

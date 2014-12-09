@@ -11,12 +11,15 @@
 #include "SequenceManager.h"
 #include "ScriptRunner.h"
 #include "ExecutionManager.h"
+#include "ActionScopeManager.h"
 
 int main()
 {
 	auto context_manager = new ContextManager();
 	auto seq_manager = new SequenceManager();
 	auto script_runner = new ScriptRunner();
+	
+	ActionScopeManager::init(context_manager);
 
 	string_t asset_path = TEXT("../assets/");
 	ResourceManager::init(asset_path);
@@ -26,7 +29,7 @@ int main()
 	bool quit_game = false;
 
 	script_runner->add_def(TEXT("def_context"), [&](ScriptRaw* raw){
-		auto context = new Context();
+		auto context = new Context(raw->vals->vals);
 		auto local_scope = context->build_context(raw);
 		context_manager->add_context(raw->vals->vals, context);
 		return local_scope;
@@ -44,6 +47,33 @@ int main()
 	});
 
 	script_runner->add_async_action(TEXT("run_seq"), [&](ActionVal * val, std::function<void()> done){
+		seq_manager->run_sequence(val->vals, done);
+	});
+
+	script_runner->add_def(TEXT("def_anim"), [&](ScriptRaw* raw){
+		auto seq = new Sequence();
+		auto local_scope = seq->build_sequence(raw);
+		seq_manager->add_sequence(raw->vals->vals, seq);
+		return local_scope;
+	});
+
+	script_runner->add_async_action(TEXT("run_anim"), [&](ActionVal * val, std::function<void()> done){
+		
+		//if the anim requested is lacking a context, it must be an embedded handler
+		//thus we can assume the action scope is setup correctly, we just need to 
+		//grab the name so we can find the right animation
+		if (val->vals.find('.') == string_t::npos)
+		{
+			val->vals = ActionScopeManager::get_name() + TEXT(".") + val->vals;
+		}
+		//on the flip side, if it contains a context name, we need to target said context
+		else
+		{
+			int last_period = val->vals.find_last_of('.');
+			string_t context_name = val->vals.substr(0, last_period);
+			ActionScopeManager::set_scope(context_name);
+		}
+		
 		seq_manager->run_sequence(val->vals, done);
 	});
 

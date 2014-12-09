@@ -50,10 +50,12 @@ void ScriptRunner::parse(ScriptRaw * script)
 	else
 	{
 		bool handled = false;
+		string_t def_ns = TEXT("");
 		for (auto it = _scopes.rbegin(); it != _scopes.rend(); it++)
 		{
 			if ((*it)->defs.find(cmd) != (*it)->defs.end())
 			{
+				if (def_ns.size() > 0) script->vals->vals = def_ns + script->vals->vals;
 				auto local_scope = (*it)->defs[cmd](script);
 				_scopes.push_back(local_scope);
 				for (auto line : script->inner_lines)
@@ -106,6 +108,11 @@ void ScriptRunner::parse(ScriptRaw * script)
 				}
 				handled = true;
 				break;
+			}
+
+			if ((*it)->scope_target.size() > 0)
+			{
+				def_ns = (*it)->scope_target + TEXT(".") + def_ns;
 			}
 		}
 	}

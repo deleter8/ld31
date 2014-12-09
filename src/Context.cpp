@@ -1,8 +1,10 @@
 #include "Context.h"
 #include "ResourceManager.h"
+#include "ActionScopeManager.h"
 
-Context::Context()
+Context::Context(string_t name)
 {
+	_name = name;
 	_mouseclick_handlers = std::list<std::pair<sf::IntRect, std::function<bool(MouseEvent)>>>();
 	_mousedown_handlers = std::list<std::pair<sf::IntRect, std::function<bool(MouseEvent)>>>();
 	_keypress_handlers = std::list<std::pair<sf::Keyboard::Key, std::function<bool()>>>();
@@ -60,6 +62,7 @@ void Context::add_inner_element(string_t name, Context * element)
 
 bool Context::handle_mouseclick(int x, int y)
 {
+	ActionScopeManager::set_scope(this);
 	for (auto it : _mouseclick_handlers)
 	{
 		if (it.first.contains(sf::Vector2<int>(x, y)))
@@ -78,6 +81,7 @@ bool Context::handle_mouseclick(int x, int y)
 
 bool Context::handle_mousedown(int x, int y)
 {
+	ActionScopeManager::set_scope(this);
 	for (auto it : _mousedown_handlers)
 	{
 		if (it.first.contains(sf::Vector2<int>(x, y)))
@@ -96,6 +100,7 @@ bool Context::handle_mousedown(int x, int y)
 
 bool Context::handle_keypress(sf::Keyboard::Key key)
 {
+	ActionScopeManager::set_scope(this);
 	for (auto it : _keypress_handlers)
 	{
 		if (it.first == key && it.second()) return true;
@@ -110,6 +115,7 @@ bool Context::handle_keypress(sf::Keyboard::Key key)
 
 bool Context::handle_keyheld(sf::Keyboard::Key key)
 {
+	ActionScopeManager::set_scope(this);
 	for (auto it : _keyheld_handlers)
 	{
 		if (it.first == key && it.second()) return true;
@@ -124,6 +130,7 @@ bool Context::handle_keyheld(sf::Keyboard::Key key)
 
 void Context::render(sf::RenderWindow& window)
 {
+	ActionScopeManager::set_scope(this);
 	for (auto draw : _draw_list)
 	{
 		window.draw(*draw);
@@ -156,9 +163,10 @@ const std::list<sf::Keyboard::Key> Context::Keys()
 	return _keys;
 }
 
-ScriptScope * Context::build_context(ScriptRaw *)
+ScriptScope * Context::build_context(ScriptRaw * raw)
 {
 	auto scope = new ScriptScope();
+	scope->scope_target = raw->vals->vals;
 
 	scope->statements = NULL; //error b/c this doesn't make sense, there shouldn't be actions in the def-scope of context
 	
@@ -293,9 +301,9 @@ ScriptScope * Context::build_context(ScriptRaw *)
 	};
 
 	scope->defs[TEXT("def_element")] = [&](ScriptRaw * raw){
-		auto inner_element = new Context();
+		auto inner_element = new Context(raw->vals->vals);
 		auto build_thing = inner_element->build_context(raw);
-		add_inner_element(raw->vals->vals, inner_element);
+		add_inner_element(_name + TEXT(".") + raw->vals->vals, inner_element);
 		return build_thing;
 	};
 
@@ -305,6 +313,10 @@ ScriptScope * Context::build_context(ScriptRaw *)
 void Context::prep()
 {
 	_draw_list.clear();
+	_text_list.clear();
+	_sprite_list.clear();
+	_transform_list.clear();
+
 	_context_dimensions = sf::FloatRect(0,0,0,0);
 	for (auto thing : _display_things)
 	{
@@ -314,6 +326,8 @@ void Context::prep()
 			sprite->setPosition(thing.x * ResourceManager::scaling_factor().x,
 				                thing.y * ResourceManager::scaling_factor().y);
 			_draw_list.push_back(sprite);
+			_sprite_list.push_back(sprite);
+			_transform_list.push_back(sprite);
 			_context_dimensions = sprite->getGlobalBounds();
 		}
 		else if (thing.thing_type == DisplayThings::TEXT)
@@ -326,6 +340,8 @@ void Context::prep()
 			text->setPosition(thing.x * ResourceManager::scaling_factor().x,
 				              thing.y * ResourceManager::scaling_factor().y);
 			_draw_list.push_back(text);
+			_text_list.push_back(text);
+			_transform_list.push_back(text);
 			_context_dimensions = text->getGlobalBounds();
 		}
 	}
@@ -362,4 +378,85 @@ void Context::prep()
 const bool& Context::only_handle_when_top_context()
 {
 	return _only_handle_when_top_context;
+}
+
+
+void Context::step_scale(float val)
+{
+	for (auto thing : _transform_list) thing->setScale(val, val);
+	for (auto inner : _inner_elements) inner->step_scale(val);
+}
+
+void Context::step_scalex(float val)
+{
+	for (auto thing : _transform_list) thing->setScale(val, thing->getScale().y);
+	for (auto inner : _inner_elements) inner->step_scalex(val);
+}
+
+void Context::step_scaley(float val)
+{
+	for (auto thing : _transform_list)thing->setScale(thing->getScale().x, val);
+	for (auto inner : _inner_elements) inner->step_scaley(val);
+}
+
+void Context::step_opacity(float val)
+{
+	for (auto thing : _text_list)
+	{
+		auto cc = thing->getColor();
+		thing->setColor(sf::Color(cc.r, cc.g, cc.b, (sf::Uint8)(255 * val)));
+	}
+	for (auto thing : _sprite_list)
+	{
+		auto cc = thing->getColor();
+		thing->setColor(sf::Color(cc.r, cc.g, cc.b, (sf::Uint8)(255 * val)));
+	}
+	for (auto inner : _inner_elements) inner->step_opacity(val);
+}
+
+std::function<void(float)> Context::get_step(string_t attrib)
+{
+	if (attrib == TEXT("scale"))
+	{
+		return[&](float val){ step_scale(val); };
+	}
+	else if (attrib == TEXT("scale_x"))
+	{
+		return[&](float val){ step_scalex(val); };
+	}
+	else if (attrib == TEXT("scale_y"))
+	{
+		return[&](float val){ step_scaley(val); };
+	}
+	else if (attrib == TEXT("opacity"))
+	{
+		return[&](float val){step_opacity(val); };
+	}
+
+	return[](float val){};
+}
+
+const string_t& Context::get_name()
+{
+	return _name;
+}
+
+Context * Context::get_inner_element(string_t name)
+{
+	if (_inner_element_lookup.find(name) != _inner_element_lookup.end())
+	{
+		return _inner_element_lookup[name];
+	}
+	else
+	{
+		for (auto context : _inner_elements)
+		{
+			if (name.find(context->_name) == 0)
+			{
+				return _inner_element_lookup[context->_name];
+			}
+		}
+	}	
+
+	return NULL;
 }

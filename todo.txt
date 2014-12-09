@@ -13,7 +13,7 @@
 
 [x]push_context
 [x]pop_context
-[ ]trigger_ease
+[ ]ease
 [x]run_seq
 [ ]run_anim
 [ ]loop_anim

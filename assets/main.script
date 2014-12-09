@@ -24,7 +24,8 @@ def_context main_menu
       stop_anim bouncy
     def_anim bouncy
       def_step
-        trigger_ease size sine .7 1 1000
+        ease scale sine .7 1 1000
+
   def_element settings_label
     def_attrib text settings 10 175 156
     def_handler mouseclick
@@ -42,16 +43,16 @@ def_context main_menu
 
   def_anim show
     def_step
-      trigger_ease size linear 0 1.1 300
+      ease scale linear 0 1.1 300
     def_step
-      size linear 1.1 1 27
+      ease scale linear 1.1 1 27
 
   def_anim hide
     def_step
-      trigger_ease size linear 1 1.1 27
+      ease scale linear 1 1.1 27
     def_step
-      trigger_ease size linear 1.1 0 300
-      trigger_ease opacity linear 1 0 300
+      ease scale linear 1.1 0 300
+      ease opacity linear 1 0 300
 
 def_context settings_menu
   def_element musiclevel_label
@@ -99,37 +100,37 @@ def_seq init_menu
   def_step
     push_context main_frame
     push_context main_menu
-    run_anim main_menu show
+    run_anim main_menu.show
 
 def_seq main_to_settings
   def_step
-    run_anim main_menu hide
+    run_anim main_menu.hide
   def_step
     pop_context main_menu  
     push_context settings_menu
-    run_anim settings_menu show
+    run_anim settings_menu.show
 
 def_seq settings_to_main
   def_step
-    run_anim settings_menu hide
+    run_anim settings_menu.hide
   def_step
     pop_context settings_menu
     push_context main_menu
-    run_anim main_menu show
+    run_anim main_menu.show
 
 def_seq start_game
   def_step
-    run_anim main_menu hide
+    run_anim main_menu.hide
   def_step
     pop_context main_menu
     pop_context main_frame
   def_step
     push_context game
-    run_anim game show
+    run_anim game.show
 
 def_seq end_game
   def_step
-    run_anim game hide
+    run_anim game.hide
   def_step
     pop_context game
     run_seq init_menu

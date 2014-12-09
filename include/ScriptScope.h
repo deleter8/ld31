@@ -25,6 +25,7 @@ public:
 	std::unordered_map<string_t, std::function<ScriptScope*(ScriptRaw*)>> defs;
 	std::list<script_statement_t> * statements;
 	std::list<script_async_statement_t> * async_statements;
+	string_t scope_target;
 };
 
 #endif //__SCRIPT_SCOPE__

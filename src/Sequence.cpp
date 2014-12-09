@@ -2,6 +2,7 @@
 
 #include "Sequence.h"
 #include "ExecutionManager.h"
+#include "ActionScopeManager.h"
 
 
 SequenceStep::SequenceStep()
@@ -9,7 +10,7 @@ SequenceStep::SequenceStep()
 	async_statements = script_async_statement_list_t();
 }
 
-void SequenceStep::run(std::function<void()> done)
+void SequenceStep::run(std::function<void()> done, string_t target)
 {
 	count = async_statements.size();
 	if (count == 0)
@@ -23,6 +24,7 @@ void SequenceStep::run(std::function<void()> done)
 		if (count == 0) ExecutionManager::RunDeferred(done);
 	};
 
+	ActionScopeManager::set_scope(target);
 	for (auto statement : async_statements)
 	{
 		statement.first(statement.second, done_wrapper);
@@ -36,7 +38,7 @@ Sequence::Sequence()
 	_already_running = false;
 }
 
-void Sequence::run(std::function<void()> done)
+void Sequence::run(std::function<void()> done, string_t target)
 {
 	if (_already_running)
 	{
@@ -52,7 +54,7 @@ void Sequence::run(std::function<void()> done)
 	for (auto it = _steps.rbegin(); it != _steps.rend(); it++)
 	{
 		auto step = *it;
-		next_done = [next_done, step](){step->run(next_done);};
+		next_done = [=](){step->run(next_done, target); };
 	}
 
 	ExecutionManager::RunDeferred(next_done);
