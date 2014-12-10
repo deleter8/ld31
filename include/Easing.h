@@ -3,6 +3,8 @@
 
 #include <functional>
 
+typedef std::function<float(float, float, float, float)> ease_func_t;
+
 class Easing
 {
 private:
@@ -19,9 +21,9 @@ public:
 
 	void run(int ticks);
 
-	bool done();
+	bool is_done();
 
-	std::function<float(float, float, float, float)> tfunc;
+	ease_func_t tfunc;
 
 	std::function<void(float)> on_step;
 

@@ -1,8 +1,8 @@
 [x]def_context
 [x]  def_attrib
 [x]  def_handler
-[ ]  def_anim
-[ ]    def_step
+[x]  def_anim
+[x]    def_step
 [x]  def_element
 [x]    def_attrib
 [x]    def_handler
@@ -13,8 +13,8 @@
 
 [x]push_context
 [x]pop_context
-[ ]ease
+[x]ease
 [x]run_seq
-[ ]run_anim
-[ ]loop_anim
-[ ]stop_anim
+[x]run_anim
+[x]loop_anim
+[x]stop_anim

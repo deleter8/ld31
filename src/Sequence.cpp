@@ -24,7 +24,7 @@ void SequenceStep::run(std::function<void()> done, string_t target)
 		if (count == 0) ExecutionManager::RunDeferred(done);
 	};
 
-	ActionScopeManager::set_scope(target);
+	if(target.size() > 0) ActionScopeManager::set_scope(target);
 	for (auto statement : async_statements)
 	{
 		statement.first(statement.second, done_wrapper);
@@ -60,19 +60,21 @@ void Sequence::run(std::function<void()> done, string_t target)
 	ExecutionManager::RunDeferred(next_done);
 }
 
-void Sequence::loop_helper()
+void Sequence::loop_helper(string_t target)
 {
 	if (!stop_looping)
 	{
-		run([&](){loop_helper(); });
+		run([&, target](){loop_helper(target); }, target);
 	}
 }
 
-void Sequence::loop()
+void Sequence::loop(string_t target)
 {
+	if (_already_running) return;
+
 	stop_looping = false;
 	
-	loop_helper();
+	loop_helper(target);
 }
 
 void Sequence::stop()

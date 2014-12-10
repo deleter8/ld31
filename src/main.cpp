@@ -3,6 +3,10 @@
 #include <unordered_map>
 
 #include <SFML/Graphics.hpp>
+#include <math.h>
+#ifndef PI 
+#define PI 3.14159265
+#endif
 
 #include "string_t.h"
 #include "ResourceManager.h"
@@ -12,12 +16,15 @@
 #include "ScriptRunner.h"
 #include "ExecutionManager.h"
 #include "ActionScopeManager.h"
+#include "Easing.h"
+#include "EasingManager.h"
 
 int main()
 {
 	auto context_manager = new ContextManager();
 	auto seq_manager = new SequenceManager();
 	auto script_runner = new ScriptRunner();
+	auto easing_manager = new EasingManager();
 	
 	ActionScopeManager::init(context_manager);
 
@@ -47,6 +54,7 @@ int main()
 	});
 
 	script_runner->add_async_action(TEXT("run_seq"), [&](ActionVal * val, std::function<void()> done){
+		std::cout << "running sequence " << ws2s(val->vals) << std::endl;
 		seq_manager->run_sequence(val->vals, done);
 	});
 
@@ -73,8 +81,88 @@ int main()
 			string_t context_name = val->vals.substr(0, last_period);
 			ActionScopeManager::set_scope(context_name);
 		}
-		
+		std::cout << "running animation - " << ws2s(val->vals) << std::endl;
 		seq_manager->run_sequence(val->vals, done);
+	});
+
+	script_runner->add_action(TEXT("loop_anim"), [&](ActionVal * val){
+		if (val->vals.find('.') == string_t::npos)
+		{
+			val->vals = ActionScopeManager::get_name() + TEXT(".") + val->vals;
+		}
+		else
+		{
+			int last_period = val->vals.find_last_of('.');
+			string_t context_name = val->vals.substr(0, last_period);
+			ActionScopeManager::set_scope(context_name);
+		}
+		std::cout << "looping animation - " << ws2s(val->vals) << std::endl;
+		seq_manager->loop_sequence(val->vals);
+		return ActionVal::EMPTY();
+	});
+
+	script_runner->add_action(TEXT("stop_anim"), [&](ActionVal * val){
+		if (val->vals.find('.') == string_t::npos)
+		{
+			val->vals = ActionScopeManager::get_name() + TEXT(".") + val->vals;
+		}
+		else
+		{
+			int last_period = val->vals.find_last_of('.');
+			string_t context_name = val->vals.substr(0, last_period);
+			ActionScopeManager::set_scope(context_name);
+		}
+		std::cout << "stopping animation - " << ws2s(val->vals) << std::endl;
+		seq_manager->stop_sequence(val->vals);
+		return ActionVal::EMPTY();
+	});
+
+	easing_manager->add_ease_func(TEXT("linear"), [](float from, float to, float current, float percent)->float{
+		return from + (to - from) * percent;
+	});
+
+	easing_manager->add_ease_func(TEXT("sine"), [](float from, float to, float current, float percent)->float{
+		auto half = (to - from) / 2.f;
+		return (float)(sin(PI * 2 * percent) * half + half + from);
+	});
+
+	easing_manager->add_ease_func(TEXT("cosine"), [](float from, float to, float current, float percent)->float{
+		auto half = (to - from) / 2.f;
+		return (float)(cos(PI * 2 * percent) * half + half + from);
+	});
+
+	easing_manager->add_ease_func(TEXT("halfsine"), [](float from, float to, float current, float percent)->float{
+		auto half = (to - from) / 2.f;
+		return (float)(sin(PI * percent) * half + half + from);
+	});
+
+	easing_manager->add_ease_func(TEXT("halfcosine"), [](float from, float to, float current, float percent)->float{
+		auto half = (to - from) / 2.f;
+		return (float)(cos(PI * percent) * half + half + from);
+	});
+
+	easing_manager->add_ease_func(TEXT("squared"), [](float from, float to, float current, float percent)->float{
+		return from + (to - from) * percent * percent;
+	});
+
+	easing_manager->add_ease_func(TEXT("sqrt"), [](float from, float to, float current, float percent)->float{
+		return from + (to - from) * sqrt(percent);
+	});
+
+	script_runner->add_async_action(TEXT("ease"), [&](ActionVal * val, std::function<void()> done){
+		auto ease_attrib = val->vals;
+		auto ease_name = val->next->vals;
+		
+		auto from_val = val->next->next->valf();
+		auto to_val = val->next->next->next->valf();
+		auto duration = val->next->next->next->next->vali();
+		
+		auto easing = new Easing(from_val, to_val, duration);
+		easing->tfunc = easing_manager->get_ease_func(ease_name);
+		easing->on_step = ActionScopeManager::get_step(ease_attrib);
+		easing->on_done = done;
+		easing->on_step(from_val);
+		easing_manager->add_easing(easing);
 	});
 
 	script_runner->add_action(TEXT("push_context"), [&](ActionVal * val){
@@ -136,8 +224,11 @@ int main()
 		key_pressed[key] = false;
 	}
 
+	sf::Clock clock;
+	int leftover_ticks = 0;
 	while (!quit_game)
 	{
+		sf::Time elapsed = clock.restart();
 		if (window != NULL && window->isOpen())
 		{
 			sf::Event event;
@@ -180,6 +271,14 @@ int main()
 				if (in_window) context_manager->handle_mouseclick(coords.x, coords.y);
 				if (in_window) std::cout << coords.x << ", " << coords.y << std::endl;
 			}
+
+			auto ticks = elapsed.asMilliseconds() + leftover_ticks;
+			while (ticks >= 5)
+			{
+				easing_manager->run(5);
+				ticks -= 5;
+			}
+			leftover_ticks = ticks;
 
 			window->clear();
 			context_manager->render(*window);

@@ -18,13 +18,13 @@ def_context main_menu
     def_handler mouseclick
       play_sound menu_click
       run_seq start_game
-    def_handler mouseenter
-      loop_anim bouncy
-    def_handler mouseleave
-      stop_anim bouncy
+    #def_handler mouseenter
+    #  loop_anim bouncy
+    #def_handler mouseleave
+    #  stop_anim bouncy
     def_anim bouncy
       def_step
-        ease scale sine .7 1 1000
+        ease scale sine .9 1 300
 
   def_element settings_label
     def_attrib text settings 10 175 156
@@ -43,16 +43,10 @@ def_context main_menu
 
   def_anim show
     def_step
-      ease scale linear 0 1.1 300
-    def_step
-      ease scale linear 1.1 1 27
-
+      ease opacity squared 0 1 100
   def_anim hide
     def_step
-      ease scale linear 1 1.1 27
-    def_step
-      ease scale linear 1.1 0 300
-      ease opacity linear 1 0 300
+      ease opacity squared 1 0 100
 
 def_context settings_menu
   def_element musiclevel_label
@@ -89,6 +83,13 @@ def_context settings_menu
 
   def_handler keypress 36
     run_seq settings_to_main
+
+  def_anim show
+    def_step
+      ease opacity squared 0 1 100
+  def_anim hide
+    def_step
+      ease opacity squared 1 0 100
 
 def_context game
   def_handler keypress 0

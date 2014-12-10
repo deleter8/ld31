@@ -24,12 +24,12 @@ class Sequence
 private:
 	bool stop_looping;
 	std::list<SequenceStep*> _steps;
-	void loop_helper();
+	void loop_helper(string_t target);
 	bool _already_running;
 public:
 	Sequence();
 	void run(std::function<void()> done, string_t target = TEXT(""));
-	void loop();
+	void loop(string_t target = TEXT(""));
 	void stop();//not instantaneous, has to wait for loop to come to end of _steps
 
 	ScriptScope * build_sequence(ScriptRaw *);

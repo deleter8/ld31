@@ -10,8 +10,8 @@
 class ActionScopeManager
 {
 private:
-	static ContextManager * context_manager;
-	static Context * current_context;
+	static ContextManager * _context_manager;
+	static Context * _current_context;
 	
 public:
 	static void init(ContextManager * context_manager);

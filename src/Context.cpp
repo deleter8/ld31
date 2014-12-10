@@ -167,7 +167,7 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 {
 	auto scope = new ScriptScope();
 	scope->scope_target = raw->vals->vals;
-
+	
 	scope->statements = NULL; //error b/c this doesn't make sense, there shouldn't be actions in the def-scope of context
 	
 	scope->defs[TEXT("def_attrib")] = [&](ScriptRaw* raw){
@@ -234,7 +234,7 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 				return true;
 			};
 
-			sf::IntRect rect;
+			
 			if (raw->vals->next == NULL || raw->vals->next->vals == TEXT(""))
 			{
 				if (event_name == TEXT("mouseclick")) lingering_mouseclick_handler = handler;
@@ -246,6 +246,7 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 			}
 			else
 			{
+				sf::IntRect rect;
 				auto x1 = raw->vals->next->vali();
 				auto y1 = raw->vals->next->next->vali();
 				auto x2 = raw->vals->next->next->next->vali();
@@ -254,15 +255,15 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 				auto topleft = sf::Vector2i(x1, y1);
 				auto bottomright = sf::Vector2i(x2, y2);
 				rect = sf::IntRect(topleft, bottomright - topleft);
-			}
 
-			if (event_name == TEXT("mouseclick"))
-			{ 
-				add_mouseclick_handler(rect, handler);
-			}
-			else if (event_name == TEXT("mousedown"))
-			{
-				add_mousedown_handler(rect, handler);
+				if (event_name == TEXT("mouseclick"))
+				{
+					add_mouseclick_handler(rect, handler);
+				}
+				else if (event_name == TEXT("mousedown"))
+				{
+					add_mousedown_handler(rect, handler);
+				}
 			}
 
 			return local_scope;
@@ -301,9 +302,10 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 	};
 
 	scope->defs[TEXT("def_element")] = [&](ScriptRaw * raw){
-		auto inner_element = new Context(raw->vals->vals);
+		auto inner_name = _name + TEXT(".") + raw->vals->vals;
+		auto inner_element = new Context(inner_name);
 		auto build_thing = inner_element->build_context(raw);
-		add_inner_element(_name + TEXT(".") + raw->vals->vals, inner_element);
+		add_inner_element(inner_name, inner_element);
 		return build_thing;
 	};
 

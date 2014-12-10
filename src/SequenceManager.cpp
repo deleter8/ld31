@@ -30,11 +30,16 @@ void SequenceManager::run_sequence(string_t name, std::function<void()> done)
 {
 	if (_sequences.find(name) != _sequences.end())
 	{
-		_sequences[name]->run(done);
+		auto last_period = name.find_last_of('.');
+		if (last_period != string_t::npos)
+			_sequences[name]->run(done, name.substr(0, last_period));
+		else
+			_sequences[name]->run(done);
 	}
 	else
 	{
 		std::cout << "could not find sequence to run (str, func) - " << ws2s(name) << std::endl;
+		ExecutionManager::RunDeferred(done);
 	}
 }
 
@@ -42,7 +47,11 @@ void SequenceManager::loop_sequence(string_t name)
 {
 	if (_sequences.find(name) != _sequences.end())
 	{
-		_sequences[name]->loop();
+		auto last_period = name.find_last_of('.');
+		if (last_period != string_t::npos)
+			_sequences[name]->loop(name.substr(0, last_period));
+		else
+			_sequences[name]->loop();
 	}
 	else
 	{
