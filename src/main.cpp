@@ -279,8 +279,8 @@ int main()
 
 			while (ticks >= 5)
 			{
-				easing_manager->run(16);
-				ticks -= 16;
+				easing_manager->run(5);
+				ticks -= 5;
 			}
 			leftover_ticks = ticks;
 
