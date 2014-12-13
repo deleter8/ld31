@@ -1,5 +1,5 @@
 #include "ExecutionManager.h"
-
+#include <iostream>
 
 std::function<void()> ExecutionManager::thunk = [](){};
 bool ExecutionManager::_executing = false;

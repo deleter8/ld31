@@ -226,10 +226,12 @@ int main()
 	}
 
 	sf::Clock clock;
+	sf::Time last_time = clock.getElapsedTime();
 	int leftover_ticks = 0;
 	while (!quit_game)
 	{
-		sf::Time elapsed = clock.restart();
+		sf::Time elapsed = clock.getElapsedTime() - last_time;
+		last_time = clock.getElapsedTime();
 		if (window != NULL && window->isOpen())
 		{
 			sf::Event event;
@@ -274,7 +276,8 @@ int main()
 			}
 
 			auto ticks = elapsed.asMilliseconds() + leftover_ticks;
-			while (ticks >= 16)
+
+			while (ticks >= 5)
 			{
 				easing_manager->run(16);
 				ticks -= 16;

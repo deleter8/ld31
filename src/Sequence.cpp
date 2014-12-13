@@ -57,7 +57,7 @@ void Sequence::run(std::function<void()> done, string_t target)
 		next_done = [=](){step->run(next_done, target); };
 	}
 
-	ExecutionManager::RunDeferred(next_done);
+	ExecutionManager::RunImmediate(next_done);
 }
 
 void Sequence::loop_helper(string_t target)
