@@ -8,3 +8,4 @@ external/*
 *.suo
 screenshots/
 **/build/
+*.txt.user

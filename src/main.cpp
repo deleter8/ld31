@@ -192,8 +192,13 @@ int main()
 		int w = val->vali();
 		int h = val->next->vali();
 		string_t title = val->next->next->vals;
-		window = new sf::RenderWindow(sf::VideoMode(w, h), title);
-		window_rect = sf::IntRect(sf::Vector2i(0, 0), (sf::Vector2i)window->getSize());
+        auto style = sf::Style::Close;
+        if(val->next->next->next != NULL && val->next->next->next->vals == TEXT("fullscreen"))
+        {
+            style = sf::Style::Fullscreen;
+        }
+        window = new sf::RenderWindow(sf::VideoMode(w, h), title, style);
+        window_rect = sf::IntRect(sf::Vector2i(0, 0), (sf::Vector2i)window->getSize());
 		ResourceManager::set_screen_res(w, h);
 
 		return ActionVal::EMPTY();
@@ -225,6 +230,15 @@ int main()
 		key_pressed[key] = false;
 	}
 
+    auto video_modes = sf::VideoMode::getFullscreenModes();
+    for(auto mode : video_modes)
+    {
+        if(mode.bitsPerPixel == 32)
+        {
+            std::cout << mode.width << " x " << mode.height << std::endl;
+        }
+    }
+
 	sf::Clock clock;
 	sf::Time last_time = clock.getElapsedTime();
 	int leftover_ticks = 0;
@@ -254,13 +268,14 @@ int main()
 				{
 					auto handled = context_manager->handle_keypress(key);
 					key_pressed[key] = false;
+                    if(!handled) std::cout << "key was not handled: " << key;
 				}
 			}
 
 			auto coords = sf::Mouse::getPosition(*window);
 			bool in_window = window_rect.contains(coords);
 			coords.x = (int) ((float) coords.x / ResourceManager::scaling_factor().x);
-			coords.y = (int)((float) coords.y / ResourceManager::scaling_factor().y);
+            coords.y = (int) ((float) coords.y / ResourceManager::scaling_factor().y);
 
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{

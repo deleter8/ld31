@@ -2,7 +2,7 @@
 set g_window_w 1024
 set g_window_h 576
 
-open_window $g_window_w $g_window_h "Dare the Thirty First"
+open_window $g_window_w $g_window_h "Dare the Thirty First" #fullscreen
 
 import resources
 
