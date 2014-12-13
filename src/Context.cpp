@@ -1,6 +1,8 @@
 #include "Context.h"
 #include "ResourceManager.h"
 #include "ActionScopeManager.h"
+#include <iostream>
+
 
 Context::Context(string_t name)
 {

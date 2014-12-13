@@ -11,7 +11,13 @@ def_context main_frame
   def_attrib sprite city_background -700 420
   def_attrib sprite game_title 2050 1175
   #def_attrib text city 2055 1100 253 #don't like how this looks
-
+  def_anim show
+    def_step
+      ease opacity squared 0 1 100
+  def_anim hide
+    def_step
+      ease opacity squared 1 0 100
+      
 def_context main_menu
   def_element start_label
     def_attrib text start 10 -25 156
@@ -101,6 +107,7 @@ def_seq init_menu
   def_step
     push_context main_frame
     push_context main_menu
+    run_anim main_frame.show
     run_anim main_menu.show
 
 def_seq main_to_settings
@@ -121,6 +128,7 @@ def_seq settings_to_main
 
 def_seq start_game
   def_step
+    run_anim main_frame.hide
     run_anim main_menu.hide
   def_step
     pop_context main_menu

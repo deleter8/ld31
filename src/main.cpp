@@ -214,8 +214,9 @@ int main()
 
 	script_runner->run(ResourceManager::get_script(TEXT("main")));
 	
-    auto music = ResourceManager::get_music(TEXT("robert_del_naja_HS"));
+    auto music = ResourceManager::get_music(TEXT("b423b42"));
 	bool button_pressed = false;
+	music->setLoop(true);
 	music->play();
 
 	auto key_pressed = std::unordered_map<sf::Keyboard::Key, bool, std::hash<int> >();
@@ -273,10 +274,10 @@ int main()
 			}
 
 			auto ticks = elapsed.asMilliseconds() + leftover_ticks;
-			while (ticks >= 5)
+			while (ticks >= 16)
 			{
-				easing_manager->run(5);
-				ticks -= 5;
+				easing_manager->run(16);
+				ticks -= 16;
 			}
 			leftover_ticks = ticks;
 
