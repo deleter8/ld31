@@ -335,7 +335,7 @@ void Context::prep()
 			auto sprite = ResourceManager::get_sprite(thing.thing_name);
 			sprite->setPosition(thing.x * ResourceManager::scaling_factor().x,
 				                thing.y * ResourceManager::scaling_factor().y);
-			_draw_list.push_back(sprite);
+			add_render_object(sprite);
 			_sprite_list.push_back(sprite);
 			_transform_list.push_back(sprite);
 			_context_dimensions = sprite->getGlobalBounds();
@@ -349,7 +349,7 @@ void Context::prep()
 			}
 			text->setPosition(thing.x * ResourceManager::scaling_factor().x,
 				              thing.y * ResourceManager::scaling_factor().y);
-			_draw_list.push_back(text);
+			add_render_object(text);
 			_text_list.push_back(text);
 			_transform_list.push_back(text);
 			_context_dimensions = text->getGlobalBounds();

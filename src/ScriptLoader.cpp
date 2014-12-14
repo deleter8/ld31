@@ -4,6 +4,7 @@
 
 #include <list>
 #include <algorithm>
+#include <iostream>
 
 #include "string_t.h"
 #include "fstream_t.h"
@@ -144,6 +145,11 @@ ScriptRaw * load_script(string_t filename)
 
 			current_scope_count = space_count;
 		}
+	}
+
+	if (was_error)
+	{
+		std::cout << "there was an error while loading script" << std::endl;
 	}
 	//TODO: detect and indicate error when someone starts a file with a tabbed entry
 	//TODO: check error thing

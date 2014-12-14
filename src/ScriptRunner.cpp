@@ -1,6 +1,9 @@
+#include <iostream>
+
 #include "ScriptRunner.h"
 #include "ResourceManager.h"
 #include "ExecutionManager.h"
+
 
 ScriptRunner::ScriptRunner()
 {
