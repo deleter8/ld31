@@ -217,19 +217,19 @@ ScriptScope * ResourceManager::build_resource(ScriptRaw * raw)
 		texture_wrapper->smooth = true;
 		_inst->load_texture_if_needed(raw->vals->next->vals);
 
-		scope->defs[TEXT("def_attrib")] = [texture_wrapper](ScriptRaw* raw){
-			string_t attrib_name = raw->vals->vals;
+		scope->defs[TEXT("def_attrib")] = [texture_wrapper](ScriptRaw* attrib_raw){
+			string_t attrib_name = attrib_raw->vals->vals;
 			if (attrib_name == TEXT("sprite_dim"))
 			{
-				auto w = raw->vals->next->vali();
-				auto h = raw->vals->next->next->vali();
+				auto w = attrib_raw->vals->next->vali();
+				auto h = attrib_raw->vals->next->next->vali();
 				
 				texture_wrapper->sprite_width = w;
 				texture_wrapper->sprite_height = h;
 			}
 			else if (attrib_name == TEXT("smooth"))
 			{
-				string_t sval = raw->vals->next->vals;
+				string_t sval = attrib_raw->vals->next->vals;
 				if (sval == TEXT("true"))
 				{
 					texture_wrapper->smooth = true;
@@ -240,7 +240,7 @@ ScriptScope * ResourceManager::build_resource(ScriptRaw * raw)
 				}
 				else
 				{
-					texture_wrapper->smooth = raw->vals->next->vali()!=0;
+					texture_wrapper->smooth = attrib_raw->vals->next->vali() != 0;
 				}
 
 				if (texture_wrapper->texture != NULL){
@@ -261,25 +261,25 @@ ScriptScope * ResourceManager::build_resource(ScriptRaw * raw)
 		sprite_def->sheet_index_y = 0;
 		sprite_def->abs_coords = false;
 
-		scope->defs[TEXT("def_attrib")] = [sprite_def](ScriptRaw* raw){
-			string_t attrib_name = raw->vals->vals;
+		scope->defs[TEXT("def_attrib")] = [sprite_def](ScriptRaw* attrib_raw){
+			string_t attrib_name = attrib_raw->vals->vals;
 			if (attrib_name == TEXT("texture"))
 			{
-				auto texture_name = raw->vals->next->vals;
+				auto texture_name = attrib_raw->vals->next->vals;
 				sprite_def->texture_name = texture_name;
 
-				if (raw->vals->next->next != NULL && raw->vals->next->next->vals != TEXT(""))
+				if (attrib_raw->vals->next->next != NULL && attrib_raw->vals->next->next->vals != TEXT(""))
 				{
-					auto idx = raw->vals->next->next->vali();
-					auto idy = raw->vals->next->next->next->vali();
+					auto idx = attrib_raw->vals->next->next->vali();
+					auto idy = attrib_raw->vals->next->next->next->vali();
 
 					sprite_def->sheet_index_x = idx;
 					sprite_def->sheet_index_y = idy;
 
-					if (raw->vals->next->next->next->next != NULL && raw->vals->next->next->next->next->vals != TEXT(""))
+					if (attrib_raw->vals->next->next->next->next != NULL && attrib_raw->vals->next->next->next->next->vals != TEXT(""))
 					{
-						sprite_def->sheet_width = raw->vals->next->next->next->next->vali();
-						sprite_def->sheet_height = raw->vals->next->next->next->next->next->vali();
+						sprite_def->sheet_width = attrib_raw->vals->next->next->next->next->vali();
+						sprite_def->sheet_height = attrib_raw->vals->next->next->next->next->next->vali();
 					}
 				}
 			}
@@ -292,10 +292,10 @@ ScriptScope * ResourceManager::build_resource(ScriptRaw * raw)
 				sprite_def->abs_coords = true;
 				
 				// *trollface*, yes, I'm reusing variables against their names
-				sprite_def->sheet_index_x = raw->vals->next->vali();
-				sprite_def->sheet_index_y = raw->vals->next->next->vali();
-				sprite_def->sheet_width =   raw->vals->next->next->next->vali();
-				sprite_def->sheet_height =  raw->vals->next->next->next->next->vali();
+				sprite_def->sheet_index_x = attrib_raw->vals->next->vali();
+				sprite_def->sheet_index_y = attrib_raw->vals->next->next->vali();
+				sprite_def->sheet_width = attrib_raw->vals->next->next->next->vali();
+				sprite_def->sheet_height = attrib_raw->vals->next->next->next->next->vali();
 			}
 			return (ScriptScope*)NULL;
 		};

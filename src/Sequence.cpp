@@ -86,7 +86,7 @@ ScriptScope * Sequence::build_sequence(ScriptRaw *)
 {
 	auto scope = new ScriptScope();
 
-	scope->defs[TEXT("def_step")] = [&](ScriptRaw* raw){
+	scope->defs[TEXT("def_step")] = [&](ScriptRaw*){
 		
 		auto local_scope = new ScriptScope();
 
