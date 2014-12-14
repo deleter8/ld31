@@ -203,7 +203,6 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 			}
 			else
 			{
-				string_t text_name = attrib_raw->vals->next->vals;
 				display_thing.font_size = -1;
 			}
 			_display_things.push_back(display_thing);
