@@ -6,6 +6,9 @@ ResourceManager * ResourceManager::_inst = new ResourceManager();
 void ResourceManager::init(string_t filepath)
 {
 	_inst->_filepath = filepath;
+	_inst->_global_volume = 1.f;
+	_inst->_sound_volume = 100.f;
+	_inst->_music_volume = 100.f;
 }
 
 sf::Sprite * ResourceManager::get_texture(string_t texture)
@@ -67,13 +70,15 @@ sf::Sound * ResourceManager::get_sound(string_t sound)
 
 	auto snd = new sf::Sound();
 	snd->setBuffer(*_inst->_soundbuffers[sound]);
+	snd->setVolume(sound_volume());
 	return snd;
 }
 
 sf::Music * ResourceManager::get_music(string_t music)
 {
 	auto muz = new sf::Music();
-	muz->openFromFile(ws2s(_inst->_filepath + music + TEXT(".ogg")));
+	muz->openFromFile(ws2s(_inst->_filepath + _inst->_music_defs[music] + TEXT(".ogg")));
+	muz->setVolume(music_volume());
 	return muz;
 }
 
@@ -196,6 +201,10 @@ ScriptScope * ResourceManager::build_resource(ScriptRaw * raw)
 	{
 		_inst->_text[raw->vals->next->vals] = raw->vals->next->next->vals;
 	}
+	else if (resource_type == TEXT("music"))
+	{
+		_inst->_music_defs[raw->vals->next->vals] = raw->vals->next->next->vals;
+	}
 	else if (resource_type == TEXT("sound"))
 	{
 		get_sound(raw->vals->next->vals);
@@ -297,4 +306,35 @@ ScriptScope * ResourceManager::build_resource(ScriptRaw * raw)
 const sf::Vector2f& ResourceManager::scaling_factor()
 {
 	return _inst->_scaling_factor;
+}
+
+
+float ResourceManager::music_volume()
+{
+	return _inst->_music_volume * _inst->_global_volume;
+}
+
+float ResourceManager::sound_volume()
+{
+	return _inst->_sound_volume * _inst->_global_volume;
+}
+
+const float& ResourceManager::global_volume()
+{
+	return _inst->_global_volume;
+}
+
+float& ResourceManager::raw_music_volume()
+{
+	return _inst->_music_volume;
+}
+
+float& ResourceManager::raw_sound_volume()
+{
+	return _inst->_sound_volume;
+}
+
+void ResourceManager::set_global_volume(float v)
+{
+	_inst->_global_volume = v;
 }

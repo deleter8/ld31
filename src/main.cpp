@@ -180,6 +180,62 @@ int main()
 		return ActionVal::EMPTY();
 	});
 
+	script_runner->add_action(TEXT("lower"), [](ActionVal * val){
+		auto target = val->vals;
+		
+		if (target == TEXT("music_volume"))
+		{
+			auto volume = ResourceManager::raw_music_volume();
+			volume -= 10.f;
+			if (volume < 0) volume = 0;
+			ResourceManager::raw_music_volume() = volume;
+		}
+		else  if (target == TEXT("audio_volume"))
+		{
+			auto volume = ResourceManager::raw_sound_volume();
+			volume -= 10.f;
+			if (volume < 0) volume = 0;
+			ResourceManager::raw_sound_volume() = volume;
+		}
+		else if (target == TEXT("global_volume"))
+		{
+			auto volume = ResourceManager::global_volume();
+			volume -= .1f;
+			if (volume < 0) volume = 0;
+			ResourceManager::set_global_volume(volume);
+		}
+		
+		return ActionVal::EMPTY();
+	});
+
+	script_runner->add_action(TEXT("raise"), [](ActionVal * val){
+		auto target = val->vals;
+
+		if (target == TEXT("music_volume"))
+		{
+			auto volume = ResourceManager::raw_music_volume();
+			volume += 10.f;
+			if (volume > 100.f) volume = 100.f;
+			ResourceManager::raw_music_volume() = volume;
+		}
+		else  if (target == TEXT("audio_volume"))
+		{
+			auto volume = ResourceManager::raw_sound_volume();
+			volume += 10.f;
+			if (volume > 100.f) volume = 100.f;
+			ResourceManager::raw_sound_volume() = volume;
+		}
+		else if (target == TEXT("global_volume"))
+		{
+			auto volume = ResourceManager::global_volume();
+			volume += .1f;
+			if (volume > 1.f) volume = 1.f;
+			ResourceManager::set_global_volume(volume);
+		}
+
+		return ActionVal::EMPTY();
+	});
+
 	script_runner->add_action(TEXT("open_window"), [&](ActionVal * val){
 		if (window != NULL)
 		{
@@ -219,10 +275,11 @@ int main()
 
 	script_runner->run(ResourceManager::get_script(TEXT("main")));
 	
-    auto music = ResourceManager::get_music(TEXT("b423b42"));
 	bool button_pressed = false;
-	music->setLoop(true);
-	music->play();
+
+    //auto music = ResourceManager::get_music(TEXT("menu"));
+	//music->setLoop(true);
+	//music->play();
 
 	auto key_pressed = std::unordered_map<sf::Keyboard::Key, bool, std::hash<int> >();
 	for (auto key : context_manager->Keys())
@@ -307,19 +364,15 @@ int main()
 		sf::sleep(sf::milliseconds(1));
 	}
 
-	music->stop();
-
-	delete music;
-	music = NULL;
+	//music->stop();
+	//delete music;
+	//music = NULL;
 
 	ResourceManager::clean();
 
-	delete window;
+	if(window != NULL) delete window;
+	window = NULL;
 
-	//context:
-		//view
-		//input
-		//resources - text, images, sounds, music
 	std::cout << "all done" << std::endl;
 	return 0;
 }

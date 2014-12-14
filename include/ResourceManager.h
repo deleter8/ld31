@@ -44,11 +44,17 @@ private:
 	std::unordered_map<string_t, sf::SoundBuffer *> _soundbuffers;
 	std::unordered_map<string_t, ScriptRaw *> _scripts;
 	std::unordered_map<string_t, string_t> _text;
+	std::unordered_map<string_t, string_t> _music_defs;
 
 	string_t _filepath;
 	sf::Vector2f _scaling_factor;
 	sf::Vector2i _internal_res;
 	sf::Font * _default_font;
+
+	float _global_volume;
+	float _sound_volume;
+	float _music_volume;
+
 
 	ResourceManager();
 	
@@ -75,8 +81,14 @@ public:
 	static ScriptScope * build_resource(ScriptRaw *);
 
 	static const sf::Vector2f& scaling_factor();
+	static float music_volume();
+	static float sound_volume();
+	static float& raw_music_volume();
+	static float& raw_sound_volume();
+	static const float& global_volume();
 
 	static void set_screen_res(int x, int y);
+	static void set_global_volume(float v);	
 
 	static void clean();
 };

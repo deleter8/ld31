@@ -10,13 +10,16 @@ def_context main_frame
   def_attrib sprite title 0 0
   def_attrib sprite city_background -700 420
   def_attrib sprite game_title 2050 1175
+  def_attrib music menu
   #def_attrib text city 2055 1100 253 #don't like how this looks
   def_anim show
     def_step
       ease opacity squared 0 1 100
+      ease volume squared 0 1 200
   def_anim hide
     def_step
       ease opacity squared 1 0 100
+      ease volume squared 1 0 200
       
 def_context main_menu
   def_element start_label
@@ -98,10 +101,19 @@ def_context settings_menu
       ease opacity squared 1 0 100
 
 def_context game
+  def_attrib music game1
   def_handler keypress 0
     play_sound jump2
   def_handler keypress 36
     run_seq end_game
+    
+  def_anim show
+    def_step
+      ease volume squared 0 1 200
+  def_anim hide
+    def_step
+      ease volume squared 1 0 200
+
 
 def_seq init_menu
   def_step

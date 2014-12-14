@@ -12,7 +12,7 @@ Context::Context(string_t name)
 	_keypress_handlers = std::list<std::pair<sf::Keyboard::Key, std::function<bool()>>>();
 	_keyheld_handlers = std::list<std::pair<sf::Keyboard::Key, std::function<bool()>>>();
 	_keys = std::list<sf::Keyboard::Key>();
-
+	_music = NULL;
 	_inner_elements = std::list<Context*>();
 	_inner_element_lookup = std::unordered_map<string_t, Context*>();
 
@@ -20,6 +20,7 @@ Context::Context(string_t name)
 	has_lingering_mousedown_handler = false;
 
 	_only_handle_when_top_context = false;
+	_music_thing = TEXT("");
 }
 
 void Context::add_render_object(sf::Drawable * object)
@@ -202,9 +203,14 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 			}
 			else
 			{
+				string_t text_name = raw->vals->next->vals;
 				display_thing.font_size = -1;
 			}
 			_display_things.push_back(display_thing);
+		}
+		else if (attrib_name == TEXT("music"))
+		{
+			_music_thing = raw->vals->next->vals;
 		}
 		else if (attrib_name == TEXT("value"))
 		{
@@ -377,6 +383,19 @@ void Context::prep()
 	{
 		element->prep();
 	}
+
+	if (_music_thing != TEXT(""))
+	{
+		if (_music != NULL)
+		{
+			_music->stop();
+			delete _music;
+		}
+		_music = ResourceManager::get_music(_music_thing);
+		_music->setLoop(true);
+		_music->setVolume(0);
+		_music->play();
+	}
 }
 
 const bool& Context::only_handle_when_top_context()
@@ -418,6 +437,11 @@ void Context::step_opacity(float val)
 	for (auto inner : _inner_elements) inner->step_opacity(val);
 }
 
+void Context::step_volume(float val)
+{
+	_music->setVolume(val * ResourceManager::music_volume());
+}
+
 std::function<void(float)> Context::get_step(string_t attrib)
 {
 	if (attrib == TEXT("scale"))
@@ -436,7 +460,10 @@ std::function<void(float)> Context::get_step(string_t attrib)
 	{
 		return[&](float val){step_opacity(val); };
 	}
-
+	else if (attrib == TEXT("volume"))
+	{
+		return[&](float val){step_volume(val); };
+	}
 	return[](float val){};
 }
 

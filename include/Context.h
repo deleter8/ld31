@@ -6,6 +6,7 @@
 #include <unordered_map>
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 #include "ScriptScope.h"
 #include "ScriptRaw.h"
@@ -41,14 +42,17 @@ private:
 	std::list<sf::Transformable*> _transform_list;
 	std::list<sf::Text*> _text_list;
 	std::list<sf::Sprite*> _sprite_list;
+	sf::Music * _music;
 
 	sf::FloatRect _context_dimensions;
+
 	std::list<DisplayThings> _display_things;
 	bool has_lingering_mouseclick_handler;
 	std::function<bool(MouseEvent)> lingering_mouseclick_handler;
 	bool has_lingering_mousedown_handler;
 	std::function<bool(MouseEvent)> lingering_mousedown_handler;
 	bool _only_handle_when_top_context;
+	string_t _music_thing;
 
 	std::list<std::pair<sf::IntRect, std::function<bool(MouseEvent)>>> _mouseclick_handlers;
 	std::list<std::pair<sf::IntRect, std::function<bool(MouseEvent)>>> _mousedown_handlers;
@@ -68,6 +72,7 @@ private:
 	void step_scalex(float val);
 	void step_scaley(float val);
 	void step_opacity(float val);
+	void step_volume(float val);
 
 public:
 
