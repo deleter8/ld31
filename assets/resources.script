@@ -16,6 +16,34 @@ def_resource texture title_name
 def_resource sprite game_title
   def_attrib texture title_name
 
+def_resource texture roads
+  def_attrib sprite_dim 184 184
+
+def_resource sprite road_ew
+  def_attrib texture roads 0 0
+def_resource sprite road_ne
+  def_attrib texture roads 1 0 
+def_resource sprite road_nesw
+  def_attrib texture roads 2 0
+def_resource sprite road_ns
+  def_attrib texture roads 3 0 
+def_resource sprite road_nw
+  def_attrib texture roads 0 1 
+def_resource sprite plaza
+  def_attrib texture roads 1 1
+def_resource sprite road_es
+  def_attrib texture roads 2 1 
+def_resource sprite road_sw
+  def_attrib texture roads 3 1
+def_resource sprite road_nes
+  def_attrib texture roads 0 2
+def_resource sprite road_new
+  def_attrib texture roads 1 2
+def_resource sprite road_esw
+  def_attrib texture roads 2 2
+def_resource sprite road_snw
+  def_attrib texture roads 3 2
+
 def_resource sound jump2
 def_resource sound menu_click
 

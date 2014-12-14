@@ -115,6 +115,10 @@ void ScriptRunner::parse(ScriptRaw * script)
 				def_ns = (*it)->scope_target + TEXT(".") + def_ns;
 			}
 		}
+		if (!handled)
+		{
+			std::cout << "warning: command '" << ws2s(cmd) << "' could not be found" << std::endl;
+		}
 	}
 }
 

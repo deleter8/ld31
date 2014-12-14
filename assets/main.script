@@ -102,6 +102,15 @@ def_context settings_menu
 
 def_context game
   def_attrib music game1
+  def_attrib sprite road_es 0 0
+  def_attrib sprite road_ew 184 0
+  def_attrib sprite road_ns 0 184
+  def_attrib sprite plaza 184 184
+  def_attrib sprite road_esw 368 0
+  def_attrib sprite road_ns 368 184
+  def_attrib sprite road_nesw 368 368
+  def_attrib sprite road_ew 184 368
+  def_attrib sprite road_nes 0 368
   def_handler keypress 0
     play_sound jump2
   def_handler keypress 36
