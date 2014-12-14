@@ -173,13 +173,13 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 	
 	scope->statements = NULL; //error b/c this doesn't make sense, there shouldn't be actions in the def-scope of context
 	
-	scope->defs[TEXT("def_attrib")] = [&](ScriptRaw* raw){
-		string_t attrib_name = raw->vals->vals;
+	scope->defs[TEXT("def_attrib")] = [&](ScriptRaw* attrib_raw){
+		string_t attrib_name = attrib_raw->vals->vals;
 		if (attrib_name == TEXT("sprite"))
 		{
-			string_t sprite_name = raw->vals->next->vals;
-			auto x = raw->vals->next->next->vali();
-			auto y = raw->vals->next->next->next->vali();
+			string_t sprite_name = attrib_raw->vals->next->vals;
+			auto x = attrib_raw->vals->next->next->vali();
+			auto y = attrib_raw->vals->next->next->next->vali();
 			auto display_thing = DisplayThings();
 			display_thing.thing_type = DisplayThings::SPRITE;
 			display_thing.thing_name = sprite_name;
@@ -189,28 +189,28 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 		}
 		else if (attrib_name == TEXT("text"))
 		{
-			string_t text_name = raw->vals->next->vals;
-			auto x = raw->vals->next->next->vali();
-			auto y = raw->vals->next->next->next->vali();
+			string_t text_name = attrib_raw->vals->next->vals;
+			auto x = attrib_raw->vals->next->next->vali();
+			auto y = attrib_raw->vals->next->next->next->vali();
 			auto display_thing = DisplayThings();
 			display_thing.thing_type = DisplayThings::TEXT;
 			display_thing.thing_name = text_name;
 			display_thing.x = x;
 			display_thing.y = y;
-			if (raw->vals->next->next->next->next != NULL && raw->vals->next->next->next->next->vals != TEXT(""))
+			if (attrib_raw->vals->next->next->next->next != NULL && attrib_raw->vals->next->next->next->next->vals != TEXT(""))
 			{
-				display_thing.font_size = raw->vals->next->next->next->next->vali();
+				display_thing.font_size = attrib_raw->vals->next->next->next->next->vali();
 			}
 			else
 			{
-				string_t text_name = raw->vals->next->vals;
+				string_t text_name = attrib_raw->vals->next->vals;
 				display_thing.font_size = -1;
 			}
 			_display_things.push_back(display_thing);
 		}
 		else if (attrib_name == TEXT("music"))
 		{
-			_music_thing = raw->vals->next->vals;
+			_music_thing = attrib_raw->vals->next->vals;
 		}
 		else if (attrib_name == TEXT("value"))
 		{
@@ -224,8 +224,8 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 		return (ScriptScope*)NULL;
 	};
 
-	scope->defs[TEXT("def_handler")] = [&](ScriptRaw* raw){
-		string_t event_name = raw->vals->vals;
+	scope->defs[TEXT("def_handler")] = [&](ScriptRaw* attrib_raw){
+		string_t event_name = attrib_raw->vals->vals;
 		if (event_name.find(TEXT("mouse")) == 0)
 		{
 			auto local_scope = new ScriptScope();
@@ -234,7 +234,7 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 
 			local_scope->statements = handler_statements.get();
 			
-			auto handler = [handler_statements](MouseEvent ev){
+			auto handler = [handler_statements](MouseEvent){
 				for (auto stmt : *handler_statements)
 				{
 					stmt.first(stmt.second);
@@ -243,7 +243,7 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 			};
 
 			
-			if (raw->vals->next == NULL || raw->vals->next->vals == TEXT(""))
+			if (attrib_raw->vals->next == NULL || attrib_raw->vals->next->vals == TEXT(""))
 			{
 				if (event_name == TEXT("mouseclick")) lingering_mouseclick_handler = handler;
 				else if (event_name == TEXT("mousedown")) lingering_mousedown_handler = handler;
@@ -255,10 +255,10 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 			else
 			{
 				sf::IntRect rect;
-				auto x1 = raw->vals->next->vali();
-				auto y1 = raw->vals->next->next->vali();
-				auto x2 = raw->vals->next->next->next->vali();
-				auto y2 = raw->vals->next->next->next->next->vali();
+				auto x1 = attrib_raw->vals->next->vali();
+				auto y1 = attrib_raw->vals->next->next->vali();
+				auto x2 = attrib_raw->vals->next->next->next->vali();
+				auto y2 = attrib_raw->vals->next->next->next->next->vali();
 
 				auto topleft = sf::Vector2i(x1, y1);
 				auto bottomright = sf::Vector2i(x2, y2);
@@ -278,7 +278,7 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 		}
 		else if (event_name.find(TEXT("key")) == 0)
 		{
-			auto key = (sf::Keyboard::Key)raw->vals->next->vali();
+			auto key = (sf::Keyboard::Key)attrib_raw->vals->next->vali();
 
 			auto local_scope = new ScriptScope();
 
@@ -309,10 +309,10 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 		return (ScriptScope*)NULL;
 	};
 
-	scope->defs[TEXT("def_element")] = [&](ScriptRaw * raw){
-		auto inner_name = _name + TEXT(".") + raw->vals->vals;
+	scope->defs[TEXT("def_element")] = [&](ScriptRaw * attrib_raw){
+		auto inner_name = _name + TEXT(".") + attrib_raw->vals->vals;
 		auto inner_element = new Context(inner_name);
-		auto build_thing = inner_element->build_context(raw);
+		auto build_thing = inner_element->build_context(attrib_raw);
 		add_inner_element(inner_name, inner_element);
 		return build_thing;
 	};
@@ -464,7 +464,7 @@ std::function<void(float)> Context::get_step(string_t attrib)
 	{
 		return[&](float val){step_volume(val); };
 	}
-	return[](float val){};
+	return[](float){};
 }
 
 const string_t& Context::get_name()
