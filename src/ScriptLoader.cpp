@@ -17,7 +17,7 @@ string_t restore_string_if_needed(string_t from)
 	
 	std::replace(from.begin(), from.end(), '\x1', ' ');
 	return from.substr(1, from.size() - 2);
-};
+}
 
 ScriptRaw * load_script(string_t filename)
 {
