@@ -117,35 +117,35 @@ int main()
 		return ActionVal::EMPTY();
 	});
 
-	easing_manager->add_ease_func(TEXT("linear"), [](float from, float to, float current, float percent)->float{
+	easing_manager->add_ease_func(TEXT("linear"), [](float from, float to, float, float percent)->float{
 		return from + (to - from) * percent;
 	});
 
-	easing_manager->add_ease_func(TEXT("sine"), [](float from, float to, float current, float percent)->float{
+	easing_manager->add_ease_func(TEXT("sine"), [](float from, float to, float, float percent)->float{
 		auto half = (to - from) / 2.f;
 		return (float)(sin(PI * 2 * percent) * half + half + from);
 	});
 
-	easing_manager->add_ease_func(TEXT("cosine"), [](float from, float to, float current, float percent)->float{
+	easing_manager->add_ease_func(TEXT("cosine"), [](float from, float to, float, float percent)->float{
 		auto half = (to - from) / 2.f;
 		return (float)(cos(PI * 2 * percent) * half + half + from);
 	});
 
-	easing_manager->add_ease_func(TEXT("halfsine"), [](float from, float to, float current, float percent)->float{
+	easing_manager->add_ease_func(TEXT("halfsine"), [](float from, float to, float, float percent)->float{
 		auto half = (to - from) / 2.f;
 		return (float)(sin(PI * percent) * half + half + from);
 	});
 
-	easing_manager->add_ease_func(TEXT("halfcosine"), [](float from, float to, float current, float percent)->float{
+	easing_manager->add_ease_func(TEXT("halfcosine"), [](float from, float to, float, float percent)->float{
 		auto half = (to - from) / 2.f;
 		return (float)(cos(PI * percent) * half + half + from);
 	});
 
-	easing_manager->add_ease_func(TEXT("squared"), [](float from, float to, float current, float percent)->float{
+	easing_manager->add_ease_func(TEXT("squared"), [](float from, float to, float, float percent)->float{
 		return from + (to - from) * percent * percent;
 	});
 
-	easing_manager->add_ease_func(TEXT("sqrt"), [](float from, float to, float current, float percent)->float{
+	easing_manager->add_ease_func(TEXT("sqrt"), [](float from, float to, float, float percent)->float{
 		return from + (to - from) * sqrt(percent);
 	});
 
@@ -170,7 +170,7 @@ int main()
 		return ActionVal::EMPTY();
 	});
 
-	script_runner->add_action(TEXT("pop_context"), [&](ActionVal * val){
+	script_runner->add_action(TEXT("pop_context"), [&](ActionVal *){
 		context_manager->pop_context();
 		return ActionVal::EMPTY();
 	});
@@ -260,7 +260,7 @@ int main()
 		return ActionVal::EMPTY();
 	});
 	
-	script_runner->add_action(TEXT("quit_game"), [&](ActionVal * val){
+	script_runner->add_action(TEXT("quit_game"), [&](ActionVal *){
 		window->close();
 		sf::sleep(sf::milliseconds(300));
 		quit_game = true;
@@ -276,10 +276,6 @@ int main()
 	script_runner->run(ResourceManager::get_script(TEXT("main")));
 	
 	bool button_pressed = false;
-
-    //auto music = ResourceManager::get_music(TEXT("menu"));
-	//music->setLoop(true);
-	//music->play();
 
 	auto key_pressed = std::unordered_map<sf::Keyboard::Key, bool, std::hash<int> >();
 	for (auto key : context_manager->Keys())
@@ -363,10 +359,6 @@ int main()
 		ExecutionManager::execute();
 		sf::sleep(sf::milliseconds(1));
 	}
-
-	//music->stop();
-	//delete music;
-	//music = NULL;
 
 	ResourceManager::clean();
 
