@@ -1,6 +1,7 @@
 #include "Context.h"
 #include "ResourceManager.h"
 #include "ActionScopeManager.h"
+#include "PrimitiveRenderObjects.h"
 #include <iostream>
 
 
@@ -21,11 +22,6 @@ Context::Context(string_t name)
 
 	_only_handle_when_top_context = false;
 	_music_thing = TEXT("");
-}
-
-void Context::add_render_object(sf::Drawable * object)
-{
-	_draw_list.push_back(object);
 }
 
 void Context::add_mouseclick_handler(sf::IntRect region, std::function<bool(MouseEvent)> handler)
@@ -136,7 +132,7 @@ void Context::render(sf::RenderWindow& window)
 	ActionScopeManager::set_scope(this);
 	for (auto draw : _draw_list)
 	{
-		window.draw(*draw);
+        draw->render(window);
 	}
 	for (auto element : _inner_elements)
 	{
@@ -180,33 +176,29 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 			string_t sprite_name = attrib_raw->vals->next->vals;
 			auto x = attrib_raw->vals->next->next->vali();
 			auto y = attrib_raw->vals->next->next->next->vali();
-			auto display_thing = DisplayThings();
-			display_thing.thing_type = DisplayThings::SPRITE;
-			display_thing.thing_name = sprite_name;
-			display_thing.x = x;
-			display_thing.y = y;
-			_display_things.push_back(display_thing);
+            auto draw_thing = new SpriteRenderObject(sprite_name);
+            draw_thing->set_position(x, y);
+            _draw_list.push_back(draw_thing);
 		}
 		else if (attrib_name == TEXT("text"))
 		{
 			string_t text_name = attrib_raw->vals->next->vals;
 			auto x = attrib_raw->vals->next->next->vali();
 			auto y = attrib_raw->vals->next->next->next->vali();
-			auto display_thing = DisplayThings();
-			display_thing.thing_type = DisplayThings::TEXT;
-			display_thing.thing_name = text_name;
-			display_thing.x = x;
-			display_thing.y = y;
+            auto draw_thing = new TextRenderObject(text_name);
+            draw_thing->set_position(x, y);
+
 			if (attrib_raw->vals->next->next->next->next != NULL && attrib_raw->vals->next->next->next->next->vals != TEXT(""))
 			{
-				display_thing.font_size = attrib_raw->vals->next->next->next->next->vali();
-			}
-			else
-			{
-				display_thing.font_size = -1;
-			}
-			_display_things.push_back(display_thing);
+                draw_thing->set_font_size(attrib_raw->vals->next->next->next->next->vali());
+            }
+            _draw_list.push_back(draw_thing);
 		}
+        else if(attrib_name == TEXT("map"))
+        {
+            string_t map_name = attrib_raw->vals->next->vals;
+            _draw_list.push_back(ResourceManager::get_map(map_name));
+        }
 		else if (attrib_name == TEXT("music"))
 		{
 			_music_thing = attrib_raw->vals->next->vals;
@@ -223,8 +215,8 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 		return (ScriptScope*)NULL;
 	};
 
-	scope->defs[TEXT("def_handler")] = [&](ScriptRaw* attrib_raw){
-		string_t event_name = attrib_raw->vals->vals;
+    scope->defs[TEXT("def_handler")] = [&](ScriptRaw* handler_raw){
+        string_t event_name = handler_raw->vals->vals;
 		if (event_name.find(TEXT("mouse")) == 0)
 		{
 			auto local_scope = new ScriptScope();
@@ -242,22 +234,22 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 			};
 
 			
-			if (attrib_raw->vals->next == NULL || attrib_raw->vals->next->vals == TEXT(""))
+            if (handler_raw->vals->next == NULL || handler_raw->vals->next->vals == TEXT(""))
 			{
 				if (event_name == TEXT("mouseclick")) lingering_mouseclick_handler = handler;
 				else if (event_name == TEXT("mousedown")) lingering_mousedown_handler = handler;
 				if (event_name == TEXT("mouseclick")) has_lingering_mouseclick_handler = true;
 				else if (event_name == TEXT("mousedown")) has_lingering_mousedown_handler = true;
 
-				if (_display_things.size() != 1) return (ScriptScope*)NULL; //error bad def
+                if (_draw_list.size() != 1) return (ScriptScope*)NULL; //error bad def
 			}
 			else
 			{
 				sf::IntRect rect;
-				auto x1 = attrib_raw->vals->next->vali();
-				auto y1 = attrib_raw->vals->next->next->vali();
-				auto x2 = attrib_raw->vals->next->next->next->vali();
-				auto y2 = attrib_raw->vals->next->next->next->next->vali();
+                auto x1 = handler_raw->vals->next->vali();
+                auto y1 = handler_raw->vals->next->next->vali();
+                auto x2 = handler_raw->vals->next->next->next->vali();
+                auto y2 = handler_raw->vals->next->next->next->next->vali();
 
 				auto topleft = sf::Vector2i(x1, y1);
 				auto bottomright = sf::Vector2i(x2, y2);
@@ -277,7 +269,7 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 		}
 		else if (event_name.find(TEXT("key")) == 0)
 		{
-			auto key = (sf::Keyboard::Key)attrib_raw->vals->next->vali();
+            auto key = (sf::Keyboard::Key)handler_raw->vals->next->vali();
 
 			auto local_scope = new ScriptScope();
 
@@ -308,10 +300,10 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 		return (ScriptScope*)NULL;
 	};
 
-	scope->defs[TEXT("def_element")] = [&](ScriptRaw * attrib_raw){
-		auto inner_name = _name + TEXT(".") + attrib_raw->vals->vals;
+    scope->defs[TEXT("def_element")] = [&](ScriptRaw * element_raw){
+        auto inner_name = _name + TEXT(".") + element_raw->vals->vals;
 		auto inner_element = new Context(inner_name);
-		auto build_thing = inner_element->build_context(attrib_raw);
+        auto build_thing = inner_element->build_context(element_raw);
 		add_inner_element(inner_name, inner_element);
 		return build_thing;
 	};
@@ -321,38 +313,12 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 
 void Context::prep()
 {
-	_draw_list.clear();
-	_text_list.clear();
-	_sprite_list.clear();
-	_transform_list.clear();
+    _context_dimensions = sf::FloatRect(0,0,0,0);
 
-	_context_dimensions = sf::FloatRect(0,0,0,0);
-	for (auto thing : _display_things)
-	{
-		if (thing.thing_type == DisplayThings::SPRITE)
-		{
-			auto sprite = ResourceManager::get_sprite(thing.thing_name);
-			sprite->setPosition(thing.x * ResourceManager::scaling_factor().x,
-				                thing.y * ResourceManager::scaling_factor().y);
-			add_render_object(sprite);
-			_sprite_list.push_back(sprite);
-			_transform_list.push_back(sprite);
-			_context_dimensions = sprite->getGlobalBounds();
-		}
-		else if (thing.thing_type == DisplayThings::TEXT)
-		{
-			auto text = ResourceManager::get_text(thing.thing_name);
-			if (thing.font_size > 0)
-			{
-				text->setCharacterSize((int)((float)thing.font_size * ResourceManager::scaling_factor().x));
-			}
-			text->setPosition(thing.x * ResourceManager::scaling_factor().x,
-				              thing.y * ResourceManager::scaling_factor().y);
-			add_render_object(text);
-			_text_list.push_back(text);
-			_transform_list.push_back(text);
-			_context_dimensions = text->getGlobalBounds();
-		}
+    for (auto thing : _draw_list)
+    {
+        thing->prep();
+        _context_dimensions = thing->get_bounds();
 	}
 
 	if (has_lingering_mouseclick_handler)
@@ -405,33 +371,28 @@ const bool& Context::only_handle_when_top_context()
 
 void Context::step_scale(float val)
 {
-	for (auto thing : _transform_list) thing->setScale(val, val);
+    for (auto thing : _draw_list) thing->set_scale(val, val);
 	for (auto inner : _inner_elements) inner->step_scale(val);
 }
 
 void Context::step_scalex(float val)
 {
-	for (auto thing : _transform_list) thing->setScale(val, thing->getScale().y);
+    for (auto thing : _draw_list) thing->set_scale(val, thing->get_scale().y);
 	for (auto inner : _inner_elements) inner->step_scalex(val);
 }
 
 void Context::step_scaley(float val)
 {
-	for (auto thing : _transform_list)thing->setScale(thing->getScale().x, val);
+    for (auto thing : _draw_list)thing->set_scale(thing->get_scale().x, val);
 	for (auto inner : _inner_elements) inner->step_scaley(val);
 }
 
 void Context::step_opacity(float val)
 {
-	for (auto thing : _text_list)
+    for (auto thing : _draw_list)
 	{
-		auto cc = thing->getColor();
-		thing->setColor(sf::Color(cc.r, cc.g, cc.b, (sf::Uint8)(255 * val)));
-	}
-	for (auto thing : _sprite_list)
-	{
-		auto cc = thing->getColor();
-		thing->setColor(sf::Color(cc.r, cc.g, cc.b, (sf::Uint8)(255 * val)));
+        auto cc = thing->get_color();
+        thing->set_color(sf::Color(cc.r, cc.g, cc.b, (sf::Uint8)(255 * val)));
 	}
 	for (auto inner : _inner_elements) inner->step_opacity(val);
 }

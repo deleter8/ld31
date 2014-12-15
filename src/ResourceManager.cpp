@@ -87,6 +87,11 @@ sf::Text * ResourceManager::get_text(string_t id)
 	return new sf::Text(_inst->_text[id], *_inst->_default_font, (int)(30.f * _inst->_scaling_factor.x));
 }
 
+GameMap * ResourceManager::get_map(string_t map_name)
+{
+    return _inst->_maps[map_name];
+}
+
 ScriptRaw * ResourceManager::get_script(string_t script_name)
 {
 	if (_inst->_scripts.find(script_name) == _inst->_scripts.end())
@@ -123,6 +128,7 @@ ResourceManager::ResourceManager()
 	_sprite_defs = std::unordered_map<string_t, SpriteDef>();
 	_soundbuffers = std::unordered_map<string_t, sf::SoundBuffer *>();
 	_scripts = std::unordered_map<string_t, ScriptRaw *>();
+    _maps = std::unordered_map<string_t, GameMap*>();
 
 	_internal_res = sf::Vector2i(2560, 1440);
 	_scaling_factor = sf::Vector2f(1, 1);
@@ -209,6 +215,13 @@ ScriptScope * ResourceManager::build_resource(ScriptRaw * raw)
 	{
 		get_sound(raw->vals->next->vals);
 	}
+    else if (resource_type == TEXT("map"))
+    {
+        std::cout << "map resource define found" << std::endl;
+        delete scope;
+        _inst->_maps[resource_type] = new GameMap();
+        return _inst->_maps[resource_type]->build_map(raw);
+    }
 	else if (resource_type == TEXT("texture"))
 	{
 		TextureWrapper * texture_wrapper = &_inst->_textures[raw->vals->next->vals];

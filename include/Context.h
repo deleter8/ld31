@@ -10,6 +10,7 @@
 
 #include "ScriptScope.h"
 #include "ScriptRaw.h"
+#include "IRenderObject.h"
 
 enum MouseEvent
 {
@@ -17,36 +18,16 @@ enum MouseEvent
 	MOUSE_CLICK
 };
 
-class DisplayThings
-{
-public:
-	enum DisplayThingType
-	{
-		SPRITE,
-		TEXT
-	};
-
-	DisplayThingType thing_type;
-	string_t thing_name;
-	int x;
-	int y;
-	int font_size;
-};
-
 class Context
 {
 private:
 
 	string_t _name;
-	std::list<sf::Drawable*> _draw_list;
-	std::list<sf::Transformable*> _transform_list;
-	std::list<sf::Text*> _text_list;
-	std::list<sf::Sprite*> _sprite_list;
+    std::list<IRenderObject*> _draw_list;
 	sf::Music * _music;
 
-	sf::FloatRect _context_dimensions;
+    sf::FloatRect _context_dimensions;
 
-	std::list<DisplayThings> _display_things;
 	bool has_lingering_mouseclick_handler;
 	std::function<bool(MouseEvent)> lingering_mouseclick_handler;
 	bool has_lingering_mousedown_handler;
@@ -64,9 +45,7 @@ private:
 	std::list<Context*> _inner_elements;
 	std::unordered_map<string_t, Context*> _inner_element_lookup;
 
-	void add_inner_element(string_t name, Context * element);
-
-	void add_render_object(sf::Drawable * object);
+    void add_inner_element(string_t name, Context * element);
 
 	void step_scale(float val);
 	void step_scalex(float val);

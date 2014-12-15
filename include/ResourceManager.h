@@ -10,6 +10,7 @@
 #include "string_t.h"
 #include "ScriptRaw.h"
 #include "ScriptScope.h"
+#include "GameMap.h"
 
 class TextureWrapper
 {
@@ -45,6 +46,7 @@ private:
 	std::unordered_map<string_t, ScriptRaw *> _scripts;
 	std::unordered_map<string_t, string_t> _text;
 	std::unordered_map<string_t, string_t> _music_defs;
+    std::unordered_map<string_t, GameMap*> _maps;
 
 	string_t _filepath;
 	sf::Vector2f _scaling_factor;
@@ -75,6 +77,7 @@ public:
 	static sf::Font * get_font(string_t font_name);
 	static ScriptRaw * get_script(string_t script_name);
 	static sf::Text * get_text(string_t id);
+    static GameMap * get_map(string_t map_name);
 
 	static void set_default_font(string_t font_name);
 	

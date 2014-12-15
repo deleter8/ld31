@@ -1,6 +1,6 @@
 #game sequence
-set g_window_w 1024
-set g_window_h 576
+set g_window_w 1024#1366#1024
+set g_window_h 576#768#576
 
 open_window $g_window_w $g_window_h "Dare the Thirty First" #fullscreen
 
@@ -100,17 +100,26 @@ def_context settings_menu
     def_step
       ease opacity squared 1 0 100
 
+def_resource map map1
+  def_attrib size 16 12
+  def_layer
+    def_tile 0 road_ew
+    def_tile 1 road_ne
+    def_tile 2 road_nesw
+    def_tile 3 road_ns
+    def_tile 4 road_nw
+    def_tile 5 plaza
+    def_tile 6 road_es
+    def_tile 7 road_sw
+    def_tile 8 road_nes
+    def_tile 9 road_new
+    def_tile 10 road_esw
+    def_tile 11 road_nsw
+    #hypothetically data here
+
 def_context game
   def_attrib music game1
-  def_attrib sprite road_es 0 0
-  def_attrib sprite road_ew 184 0
-  def_attrib sprite road_ns 0 184
-  def_attrib sprite plaza 184 184
-  def_attrib sprite road_esw 368 0
-  def_attrib sprite road_ns 368 184
-  def_attrib sprite road_nesw 368 368
-  def_attrib sprite road_ew 184 368
-  def_attrib sprite road_nes 0 368
+  def_attrib map map1
   def_handler keypress 0
     play_sound jump2
   def_handler keypress 36
