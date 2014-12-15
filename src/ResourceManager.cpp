@@ -217,7 +217,6 @@ ScriptScope * ResourceManager::build_resource(ScriptRaw * raw)
 	}
     else if (resource_type == TEXT("map"))
     {
-        std::cout << "map resource define found" << std::endl;
         delete scope;
 		string_t map_name = raw->vals->next->vals;
 		_inst->_maps[map_name] = new GameMap();

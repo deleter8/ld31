@@ -47,6 +47,7 @@ private:
     int _width;
     int _height;
     sf::Vector2f _scale;
+	sf::Vector2f _position;
 
 public:
     friend class MapTileBuilder;

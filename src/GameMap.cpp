@@ -20,7 +20,10 @@ MapTileBuilder::MapTileBuilder(MapLayer &layer, int column, int row) : _layer(la
 MapTileBuilder& MapTileBuilder::operator =(int tile)
 {
     _layer._sprite_info[_column][_row] = ResourceManager::get_sprite(_layer._sprite_names[tile]);
-	_layer._sprite_info[_column][_row]->setPosition((float)_column * 160.f * ResourceManager::scaling_factor().x, (float)_row * 160.f * ResourceManager::scaling_factor().y);
+	_layer._sprite_info[_column][_row]->setPosition(
+		((float)_column * 160.f + _layer._position.x) * ResourceManager::scaling_factor().x,
+		((float)_row * 160.f + _layer._position.y) * ResourceManager::scaling_factor().y);
+
 	if (_layer._scale.x > 0)
 	{
 		_layer._sprite_info[_column][_row]->setScale(_layer._scale.x * ResourceManager::scaling_factor().x, _layer._scale.y * ResourceManager::scaling_factor().y);
@@ -43,6 +46,7 @@ MapLayer::MapLayer(int w, int h)
     _width = w;
     _height = h;
 	_scale = sf::Vector2f(0.f, 0.f);
+	_position = sf::Vector2f(0.f, 0.f);
 }
 
 MapColumnBuilder MapLayer::operator [](int column)
@@ -57,7 +61,9 @@ void MapLayer::prep()
         for(int y = 0; y < _height; y++)
         {
             _sprite_info[x][y] = ResourceManager::get_sprite(_sprite_names[tiles[x][y]]);
-			_sprite_info[x][y]->setPosition((float)x * 160.f * ResourceManager::scaling_factor().x, (float)y * 160.f * ResourceManager::scaling_factor().y);
+			_sprite_info[x][y]->setPosition(
+				((float)x * 160.f + _position.x) * ResourceManager::scaling_factor().x,
+				((float)y * 160.f + _position.y) * ResourceManager::scaling_factor().y);
 			_sprite_info[x][y]->setScale(_scale.x, _scale.y);
         }
     }
@@ -117,6 +123,15 @@ ScriptScope * MapLayer::build_layer(ScriptRaw *)
         return (ScriptScope*)NULL;
     };
 
+	scope->defs[TEXT("def_offset")] = [&](ScriptRaw* tile_raw){
+		auto x = (float)tile_raw->vals->vali();
+		auto y = (float)tile_raw->vals->next->vali();
+
+		_position = sf::Vector2f(x, y);
+
+		return (ScriptScope*)NULL;
+	};
+
     return scope;
 }
 
@@ -127,11 +142,11 @@ MapLayer& GameMap::operator [](int layer)
 
 void GameMap::hack_a_map()
 {
-    for (int bx = 0; bx < 16; bx++)
+    for (int bx = 0; bx < _width; bx++)
     {
-        for(int by = 0; by < 12; by++)
+        for(int by = 0; by < _height; by++)
         {
-			_layers[0][bx][by] = 1;
+			_layers[0][bx][by] = 0;
 			switch (by % 3)
 			{
 			case 0:

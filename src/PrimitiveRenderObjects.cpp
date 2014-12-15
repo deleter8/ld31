@@ -42,7 +42,7 @@ void TextRenderObject::set_position(float x, float y)
     _position = sf::Vector2f(x, y);
     if(_text != NULL)
     {
-        _text->setPosition(_position);
+		_text->setPosition(_position.x * ResourceManager::scaling_factor().x, _position.y  * ResourceManager::scaling_factor().y);
     }
 }
 
