@@ -136,7 +136,7 @@ ResourceManager::ResourceManager()
 
 void ResourceManager::set_screen_res(int x, int y)
 {
-	_inst->_scaling_factor = sf::Vector2f(float(x) / (float)_inst->_internal_res.x,
+	_inst->_scaling_factor = sf::Vector2f((float)x / (float)_inst->_internal_res.x,
 		                                  (float)y / (float)_inst->_internal_res.y);
 }
 

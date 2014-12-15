@@ -58,7 +58,6 @@ void MapLayer::prep()
         {
             _sprite_info[x][y] = ResourceManager::get_sprite(_sprite_names[tiles[x][y]]);
 			_sprite_info[x][y]->setPosition((float)x * 160.f * ResourceManager::scaling_factor().x, (float)y * 160.f * ResourceManager::scaling_factor().y);
-			auto pos = _sprite_info[x][y]->getPosition();
 			_sprite_info[x][y]->setScale(_scale.x, _scale.y);
         }
     }
@@ -128,29 +127,27 @@ MapLayer& GameMap::operator [](int layer)
 
 void GameMap::hack_a_map()
 {
-    for (int bx = 0; bx < 16; bx+=4)
+    for (int bx = 0; bx < 16; bx++)
     {
-        for(int by = 0; by < 12; by+=4)
+        for(int by = 0; by < 12; by++)
         {
-            _layers[0][bx + 0][by + 0] = 2;
-            _layers[0][bx + 1][by + 0] = 0;
-            _layers[0][bx + 2][by + 0] = 0;
-            _layers[0][bx + 3][by + 0] = 0;
-
-            _layers[0][bx + 0][by + 1] = 3;
-            _layers[0][bx + 1][by + 1] = 5;
-            _layers[0][bx + 2][by + 1] = 5;
-            _layers[0][bx + 3][by + 1] = 5;
-
-            _layers[0][bx + 0][by + 2] = 3;
-            _layers[0][bx + 1][by + 2] = 5;
-            _layers[0][bx + 2][by + 2] = 5;
-            _layers[0][bx + 3][by + 2] = 5;
-
-            _layers[0][bx + 0][by + 3] = 3;
-            _layers[0][bx + 1][by + 3] = 5;
-            _layers[0][bx + 2][by + 3] = 5;
-            _layers[0][bx + 3][by + 3] = 5;
+			switch (by % 3)
+			{
+			case 0:
+				switch (bx % 3)
+				{
+				case 0:_layers[0][bx][by] = 2; break;
+				default:_layers[0][bx][by] = 0; break;
+				}
+				break;
+			default:
+				switch (bx % 3)
+				{
+				case 0:_layers[0][bx][by] = 3; break;
+				default:_layers[0][bx][by] = 5; break;
+				}
+				break;
+			}
         }
     }
 }
