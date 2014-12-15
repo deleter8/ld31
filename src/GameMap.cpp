@@ -131,20 +131,21 @@ void GameMap::hack_a_map()
     {
         for(int by = 0; by < 12; by++)
         {
+			_layers[0][bx][by] = 1;
 			switch (by % 3)
 			{
 			case 0:
 				switch (bx % 3)
 				{
-				case 0:_layers[0][bx][by] = 2; break;
-				default:_layers[0][bx][by] = 0; break;
+				case 0:_layers[1][bx][by] = 3; break;
+				default:_layers[1][bx][by] = 1; break;
 				}
 				break;
 			default:
 				switch (bx % 3)
 				{
-				case 0:_layers[0][bx][by] = 3; break;
-				default:_layers[0][bx][by] = 5; break;
+				case 0:_layers[1][bx][by] = 4; break;
+				default:_layers[1][bx][by] = 0; break;
 				}
 				break;
 			}

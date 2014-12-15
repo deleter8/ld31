@@ -103,18 +103,22 @@ def_context settings_menu
 def_resource map map1
   def_attrib size 16 12
   def_layer
-    def_tile 0 road_ew
-    def_tile 1 road_ne
-    def_tile 2 road_nesw
-    def_tile 3 road_ns
-    def_tile 4 road_nw
-    def_tile 5 plaza
-    def_tile 6 road_es
-    def_tile 7 road_sw
-    def_tile 8 road_nes
-    def_tile 9 road_new
-    def_tile 10 road_esw
-    def_tile 11 road_nsw
+    def_tile 0 empty
+    def_tile 1 plaza
+  def_layer
+    def_tile 0 empty
+    def_tile 1 road_ew
+    def_tile 2 road_ne
+    def_tile 3 road_nesw
+    def_tile 4 road_ns
+    def_tile 5 road_nw
+    def_tile 6 plaza
+    def_tile 7 road_es
+    def_tile 8 road_sw
+    def_tile 9 road_nes
+    def_tile 10 road_new
+    def_tile 11 road_esw
+    def_tile 12 road_nsw
     #hypothetically data here
 
 def_context game
