@@ -1,6 +1,5 @@
 ﻿#include "GameMap.h"
 #include "ResourceManager.h"
-#include <iostream>
 
 MapColumnBuilder::MapColumnBuilder(MapLayer &layer, int column) : _layer(layer)
 {
@@ -21,8 +20,12 @@ MapTileBuilder::MapTileBuilder(MapLayer &layer, int column, int row) : _layer(la
 MapTileBuilder& MapTileBuilder::operator =(int tile)
 {
     _layer._sprite_info[_column][_row] = ResourceManager::get_sprite(_layer._sprite_names[tile]);
-    _layer._sprite_info[_column][_row]->setPosition(_column * 184, _row * 184);
-    _layer._sprite_info[_column][_row]->setScale(_layer._scale);
+	_layer._sprite_info[_column][_row]->setPosition((float)_column * 160.f * ResourceManager::scaling_factor().x, (float)_row * 160.f * ResourceManager::scaling_factor().y);
+	if (_layer._scale.x > 0)
+	{
+		_layer._sprite_info[_column][_row]->setScale(_layer._scale.x * ResourceManager::scaling_factor().x, _layer._scale.y * ResourceManager::scaling_factor().y);
+	}
+
     _layer.tiles[_column][_row] = tile;
     return *this;
 }
@@ -30,13 +33,16 @@ MapTileBuilder& MapTileBuilder::operator =(int tile)
 MapLayer::MapLayer(int w, int h)
 {
     tiles = std::vector<std::vector<int>>(w);
+	_sprite_info = std::vector<std::vector<sf::Sprite*>>(w);
     for(int i = 0; i < w; i++)
     {
         tiles[i] = std::vector<int>(h);
+		_sprite_info[i] = std::vector<sf::Sprite*>(h);
     }
     _sprite_names = std::vector<string_t>(256);
     _width = w;
     _height = h;
+	_scale = sf::Vector2f(0.f, 0.f);
 }
 
 MapColumnBuilder MapLayer::operator [](int column)
@@ -51,8 +57,9 @@ void MapLayer::prep()
         for(int y = 0; y < _height; y++)
         {
             _sprite_info[x][y] = ResourceManager::get_sprite(_sprite_names[tiles[x][y]]);
-            _sprite_info[x][y]->setPosition(x * 184, y * 184);
-            _sprite_info[x][y]->setScale(_scale.x, _scale.y);
+			_sprite_info[x][y]->setPosition((float)x * 160.f * ResourceManager::scaling_factor().x, (float)y * 160.f * ResourceManager::scaling_factor().y);
+			auto pos = _sprite_info[x][y]->getPosition();
+			_sprite_info[x][y]->setScale(_scale.x, _scale.y);
         }
     }
 }
@@ -72,7 +79,6 @@ void MapLayer::set_scale(sf::Vector2f scale)
 
 GameMap::GameMap()
 {
-    std::cout << "map created without size" << std::endl;
     _width = 0;
     _height = 0;
 
@@ -81,10 +87,9 @@ GameMap::GameMap()
 
 GameMap::GameMap(int w, int h)
 {
-    std::cout << "map created with size " << w << ", " << h << std::endl;
     _width = w;
     _height = h;
-    _size = sf::FloatRect(0, 0, w * 184, h * 184);
+    _size = sf::FloatRect(0, 0, (float)w * 160.f, (float)h * 160.f);
 
     _layers = std::vector<MapLayer>();
 }
@@ -152,10 +157,8 @@ void GameMap::hack_a_map()
 
 ScriptScope * GameMap::build_map(ScriptRaw *)
 {
-    std::cout << "building a map!" << std::endl;
     auto scope = new ScriptScope();
     scope->defs[TEXT("def_attrib")] = [&](ScriptRaw* attrib_raw){
-        std::cout << "defining map attrib!" << std::endl;
         string_t attrib_name = attrib_raw->vals->vals;
         if (attrib_name == TEXT("size"))
         {
@@ -163,7 +166,7 @@ ScriptScope * GameMap::build_map(ScriptRaw *)
             auto h = attrib_raw->vals->next->next->vali();
             _width = w;
             _height = h;
-            _size = sf::FloatRect(0, 0, w * 184, h * 184);
+            _size = sf::FloatRect(0.f, 0.f, (float)w * 160.f, (float)h * 160.f);
         }
         return (ScriptScope*)NULL;
     };
@@ -178,12 +181,11 @@ ScriptScope * GameMap::build_map(ScriptRaw *)
 
 void GameMap::prep()
 {
-    std::cout << "prepping map!" << std::endl;
-    hack_a_map();
     for(auto& layer : _layers)
     {
         layer.prep();
-    }
+	}
+	hack_a_map();
 }
 
 void GameMap::render(sf::RenderTarget & target)

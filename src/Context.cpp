@@ -177,7 +177,7 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 			auto x = attrib_raw->vals->next->next->vali();
 			auto y = attrib_raw->vals->next->next->next->vali();
             auto draw_thing = new SpriteRenderObject(sprite_name);
-            draw_thing->set_position(x, y);
+            draw_thing->set_position((float)x, (float)y);
             _draw_list.push_back(draw_thing);
 		}
 		else if (attrib_name == TEXT("text"))
@@ -186,7 +186,7 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 			auto x = attrib_raw->vals->next->next->vali();
 			auto y = attrib_raw->vals->next->next->next->vali();
             auto draw_thing = new TextRenderObject(text_name);
-            draw_thing->set_position(x, y);
+            draw_thing->set_position((float)x, (float)y);
 
 			if (attrib_raw->vals->next->next->next->next != NULL && attrib_raw->vals->next->next->next->next->vals != TEXT(""))
 			{

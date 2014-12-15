@@ -17,7 +17,7 @@ def_resource sprite game_title
   def_attrib texture title_name
 
 def_resource texture roads
-  def_attrib sprite_dim 184 184
+  def_attrib sprite_dim 160 160
 
 def_resource sprite road_ew
   def_attrib texture roads 0 0

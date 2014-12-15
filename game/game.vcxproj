@@ -16,7 +16,10 @@
     <ClCompile Include="..\src\Context.cpp" />
     <ClCompile Include="..\src\ContextManager.cpp" />
     <ClCompile Include="..\src\ExecutionManager.cpp" />
+    <ClCompile Include="..\src\GameMap.cpp" />
+    <ClCompile Include="..\src\IRenderObject.cpp" />
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\PrimitiveRenderObjects.cpp" />
     <ClCompile Include="..\src\ResourceManager.cpp" />
     <ClCompile Include="..\src\ScriptLoader.cpp" />
     <ClCompile Include="..\src\ScriptRunner.cpp" />
@@ -33,7 +36,10 @@
     <ClInclude Include="..\include\ContextManager.h" />
     <ClInclude Include="..\include\ExecutionManager.h" />
     <ClInclude Include="..\include\fstream_t.h" />
+    <ClInclude Include="..\include\GameMap.h" />
     <ClInclude Include="..\include\IEasingTarget.h" />
+    <ClInclude Include="..\include\IRenderObject.h" />
+    <ClInclude Include="..\include\PrimitiveRenderObjects.h" />
     <ClInclude Include="..\include\ResourceManager.h" />
     <ClInclude Include="..\include\ScriptScope.h" />
     <ClInclude Include="..\include\ScriptRaw.h" />

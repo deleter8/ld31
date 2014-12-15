@@ -23,7 +23,7 @@ void TextRenderObject::prep()
 {
     _text = ResourceManager::get_text(_text_name);
     _text->setPosition(_position.x * ResourceManager::scaling_factor().x, _position.y  * ResourceManager::scaling_factor().y);
-    if(_font_size > 0) _text->setCharacterSize(_font_size * ResourceManager::scaling_factor().x);
+    if(_font_size > 0) _text->setCharacterSize((unsigned int)(_font_size * ResourceManager::scaling_factor().x));
 
 }
 
