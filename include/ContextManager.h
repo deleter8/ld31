@@ -31,6 +31,7 @@ public:
 	bool handle_mousedown(int x, int y);
 	bool handle_keypress(sf::Keyboard::Key key);
 	bool handle_keyheld(sf::Keyboard::Key key);
+	bool handle_named_event(string_t event_name);//todo: probably add some optional args?
 
 	void render(sf::RenderWindow& window);
 

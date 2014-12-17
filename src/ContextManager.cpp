@@ -86,6 +86,20 @@ bool ContextManager::handle_keyheld(sf::Keyboard::Key key)
 	return false;
 }
 
+bool ContextManager::handle_named_event(string_t event_name)
+{
+	auto top_context = _context_stack.rbegin();
+	for (auto it = top_context; it != _context_stack.rend(); it++)
+	{
+		if (!(*it)->only_handle_when_top_context() || it == top_context)
+		{
+			if ((*it)->handle_named_event(event_name)) return true;
+		}
+	}
+
+	return false;
+}
+
 
 void ContextManager::render(sf::RenderWindow& window)
 {

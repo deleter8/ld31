@@ -46,6 +46,11 @@ void Context::add_keyheld_handler(sf::Keyboard::Key key, std::function<bool()> h
 	_keys.push_back(key);
 }
 
+void Context::add_named_event_handler(string_t event_name, std::function<bool()> handler)
+{
+	_named_event_handlers.push_back(std::pair<string_t, std::function<bool()>>(event_name, handler));
+}
+
 void Context::add_inner_element(string_t name, Context * element)
 {
 	_inner_element_lookup[name] = element;
@@ -123,6 +128,20 @@ bool Context::handle_keyheld(sf::Keyboard::Key key)
 	for (auto element : _inner_elements)
 	{
 		if (element->handle_keyheld(key)) return true;
+	}
+	return false;
+}
+
+bool Context::handle_named_event(string_t event_name)
+{
+	for (auto handler : _named_event_handlers)
+	{
+		if (handler.first == event_name && handler.second()) return true;
+	}
+
+	for (auto element : _inner_elements)
+	{
+		if (element->handle_named_event(event_name)) return true;
 	}
 	return false;
 }
@@ -296,8 +315,24 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
 
 			return local_scope;
 		}
+		else
+		{
+			auto local_scope = new ScriptScope();
+			auto handler_statements = std::shared_ptr<script_statement_list_t>(new script_statement_list_t());
+			local_scope->statements = handler_statements.get();
 
-		return (ScriptScope*)NULL;
+			auto handler = [handler_statements](){
+				for (auto stmt : *handler_statements)
+				{
+					stmt.first(stmt.second);
+				}
+				return true;
+			};
+
+			add_named_event_handler(event_name, handler);
+
+			return local_scope;
+		}
 	};
 
     scope->defs[TEXT("def_element")] = [&](ScriptRaw * element_raw){

@@ -40,6 +40,8 @@ private:
 	std::list<std::pair<sf::Keyboard::Key, std::function<bool()>>> _keypress_handlers;
 	std::list<std::pair<sf::Keyboard::Key, std::function<bool()>>> _keyheld_handlers;
 
+	std::list<std::pair<string_t, std::function<bool()>>> _named_event_handlers;
+
 	std::list<sf::Keyboard::Key> _keys;
 
 	std::list<Context*> _inner_elements;
@@ -61,11 +63,14 @@ public:
 	void add_mousedown_handler(sf::IntRect region, std::function<bool(MouseEvent)> handler);
 	void add_keypress_handler(sf::Keyboard::Key key, std::function<bool()> handler);
 	void add_keyheld_handler(sf::Keyboard::Key key, std::function<bool()> handler);
+	void add_named_event_handler(string_t event_name, std::function<bool()> handler);
 
 	bool handle_mouseclick(int x, int y);
 	bool handle_mousedown(int x, int y);
 	bool handle_keypress(sf::Keyboard::Key key);
 	bool handle_keyheld(sf::Keyboard::Key key);
+
+	bool handle_named_event(string_t event_name);//todo: probably add some optional args?
 
 	const std::list<sf::Keyboard::Key> Keys();
 

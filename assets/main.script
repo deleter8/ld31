@@ -1,10 +1,20 @@
 #game sequence
 set g_window_w 1024#1366#1024
 set g_window_h 576#768#576
+set g_current_map ""
+set g_current_map_region ""
+set g_control_type km #km (keyboard&mouse), gp (gamepad) <- scripter defined 
+                      #not system hardcoded
+set g_control_auto $true
 
 open_window $g_window_w $g_window_h "Dare the Thirty First" #fullscreen
 
 import resources
+
+#this will operate first, masking any interior values to exterior mapping
+def_input_mapping back
+  def_in keypress 36
+  def_in gp_back
 
 def_context main_frame
   def_attrib sprite title 0 0
@@ -20,13 +30,28 @@ def_context main_frame
     def_step
       ease opacity squared 1 0 100
       ease volume squared 1 0 200
-      
-def_context main_menu
+
+#things defined in view actually exist in context, view is used for run-time
+#switching of context 'face'
+def_view main_menu
+  def_selector box #selectors are a means of showing a keyboard/gamepad cursor
+                   #for menus and other select tasks
+    def_attrib min_width 120
+    def_attrib auto_size true
+    def_attrib move_speed 300 #pixels/s
+    def_attrib easing sinevel #todo: create sine-vel, ie method where sin is 
+                              #used to calc velocity rather than pos of move
+    def_attrib visible first_move #never, first_move, always
+    
   def_element start_label
+    def_attrib selection can-select:true order:0
     def_attrib text start 10 -25 156
+    def_handler gp_select
+      set_control_if_auto gp
+      emit_event start_game
     def_handler mouseclick
-      play_sound menu_click
-      run_seq start_game
+      set_control_if_auto km
+      emit_event start_game
     #def_handler mouseenter
     #  loop_anim bouncy
     #def_handler mouseleave
@@ -34,7 +59,44 @@ def_context main_menu
     def_anim bouncy
       def_step
         ease scale sine .9 1 300
+  def_element settings_label
+    def_attrib selection can-select:true order:1
+    def_attrib text settings 10 175 156
+    def_handler gp_select
+      if_true $g_control_auto set(var:g_control_type value:gp)
+      emit_event config_settings
+    def_handler mouseclick
+      emit_event config_settings
+  def_element quit_label
+    def_attrib selection can-select:true order:2
+    def_attrib text quit 10 365 156
+    def_handler mouseclick
+      emit_event quit
 
+  def_anim show
+    def_step
+      ease opacity squared 0 1 100
+  def_anim hide
+    def_step
+      ease opacity squared 1 0 100
+
+
+def_context main_menu
+#  def_handler start_game
+#    play_sound menu_click
+#    run_seq start_game
+#  def_handler config_settings
+#    play_sound menu_click
+#    run_seq main_to_settings
+#  def_handler quit
+#    play_sound menu_click
+#    quit_game
+  def_element start_label
+    def_attrib selectable value:true order:0
+    def_attrib text start 10 -25 156
+  def_handler mouseclick
+    play_sound menu_click
+    run_seq start_game
   def_element settings_label
     def_attrib text settings 10 175 156
     def_handler mouseclick
@@ -47,7 +109,7 @@ def_context main_menu
       play_sound menu_click
       quit_game
 
-  def_handler keypress 36
+  def_handler back
     quit_game
 
   def_anim show
@@ -90,7 +152,7 @@ def_context settings_menu
       play_sound menu_click
       run_seq settings_to_main
 
-  def_handler keypress 36
+  def_handler back
     run_seq settings_to_main
 
   def_anim show
@@ -99,44 +161,6 @@ def_context settings_menu
   def_anim hide
     def_step
       ease opacity squared 1 0 100
-
-def_resource map map1
-  def_attrib size 17 10
-  def_layer
-    def_tile 0 empty
-    def_tile 1 plaza
-  def_layer
-    def_tile 0 empty
-    def_tile 1 road_ew
-    def_tile 2 road_ne
-    def_tile 3 road_nesw
-    def_tile 4 road_ns
-    def_tile 5 road_nw
-    def_tile 6 plaza
-    def_tile 7 road_es
-    def_tile 8 road_sw
-    def_tile 9 road_nes
-    def_tile 10 road_new
-    def_tile 11 road_esw
-    def_tile 12 road_nsw
-    def_offset 0 -80
-    #hypothetically data here
-
-def_context game
-  def_attrib music game1
-  def_attrib map map1
-  def_handler keypress 0
-    play_sound jump2
-  def_handler keypress 36
-    run_seq end_game
-    
-  def_anim show
-    def_step
-      ease volume squared 0 1 200
-  def_anim hide
-    def_step
-      ease volume squared 1 0 200
-
 
 def_seq init_menu
   def_step
@@ -178,5 +202,60 @@ def_seq end_game
   def_step
     pop_context game
     run_seq init_menu
+
+def_resource map map1
+  def_attrib size 17 10
+  def_layer
+    def_tile 0 empty
+    def_tile 1 plaza
+  def_layer
+    def_tile 0 empty
+    def_tile 1 road_ew
+    def_tile 2 road_ne
+    def_tile 3 road_nesw
+    def_tile 4 road_ns
+    def_tile 5 road_nw
+    def_tile 6 plaza
+    def_tile 7 road_es
+    def_tile 8 road_sw
+    def_tile 9 road_nes
+    def_tile 10 road_new
+    def_tile 11 road_esw
+    def_tile 12 road_nsw
+    def_offset 0 -80
+    #hypothetically data here
+
+def_context game
+  def_attrib music game1
+  def_attrib map map1
+  def_handler keypress 0
+    play_sound jump2
+  def_handler back
+    run_seq end_game
+    
+  def_anim show
+    def_step
+      ease volume squared 0 1 200
+  def_anim hide
+    def_step
+      ease volume squared 1 0 200
+
+#def_view game_city_view_km #keyboard and mouse view
+
+#def_context game_city_context
+#  def_attrib map value:$get_map(name:$g_current_map)
+#  def_mode selecting
+#    def_handler gp_select #gamepad select
+#      set g_current_map_region $s_map_region
+#      run_seq show_map_region
+#todo: remember, use mouseclick and mousealtclick, not "right/left"
+#    def_handler mouseclick $map_click_region(out:s_map_region) 
+#      set g_current_map_region $s_map_region
+#      run_seq show_map_region
+
+
+#def_seq show_map_region
+#  def_step
+#    push_context game_region_view
 
 run_seq init_menu

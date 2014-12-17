@@ -12,6 +12,7 @@ public:
 	ScriptRaw(string_t thing);
 	string_t line_def;
 	ActionVal * vals;
+	unsigned int line_number;
 
 	std::list<ScriptRaw*> inner_lines;
 

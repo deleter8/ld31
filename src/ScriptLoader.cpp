@@ -38,9 +38,11 @@ ScriptRaw * load_script(string_t filename)
 	scope.back()->vals = (ActionVal*)&ActionVal::EMPTY();
 
 	bool was_error = false;
+	unsigned int current_line = 0;
 
 	for (string_t line : lines)
 	{
+		current_line++;
 		bool is_comment = false;
 		bool not_just_spaces = false;
 		int space_count = 0;
@@ -101,7 +103,7 @@ ScriptRaw * load_script(string_t filename)
 			auto things = split(line.substr(space_count), ' ');
 			
 			ScriptRaw * script_line = new ScriptRaw(things[0]);
-
+			script_line->line_number = current_line;
 			ActionVal * previous = NULL;
 			if (things.size() > 1)
 			{

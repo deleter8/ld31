@@ -60,13 +60,20 @@ void ScriptRunner::parse(ScriptRaw * script)
 			{
 				if (def_ns.size() > 0) script->vals->vals = def_ns + script->vals->vals;
 				auto local_scope = (*it)->defs[cmd](script);
-				_scopes.push_back(local_scope);
-				for (auto line : script->inner_lines)
+				if (local_scope != NULL)
 				{
-					parse(line);
+					_scopes.push_back(local_scope);
+					for (auto line : script->inner_lines)
+					{
+						parse(line);
+					}
+					_scopes.pop_back();
+					delete local_scope;
 				}
-				_scopes.pop_back();
-				delete local_scope;
+				else if (script->inner_lines.size() > 0)
+				{
+					std::cout << "event handler swallowed on line " << script->line_number << std::endl;
+				}
 				handled = true;
 				break;
 			}

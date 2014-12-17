@@ -64,7 +64,6 @@ int main()
 		seq_manager->add_sequence(raw->vals->vals, seq);
 		return local_scope;
 	});
-
 	script_runner->add_async_action(TEXT("run_anim"), [&](ActionVal * val, std::function<void()> done){
 		
 		//if the anim requested is lacking a context, it must be an embedded handler
@@ -180,6 +179,12 @@ int main()
 		return ActionVal::EMPTY();
 	});
 
+	script_runner->add_action(TEXT("set_control_if_auto"), [&](ActionVal * val){
+		std::cout << "warning: set_control_if_auto not defined yet" << std::endl;
+		return ActionVal::EMPTY();
+	});
+
+
 	script_runner->add_action(TEXT("lower"), [](ActionVal * val){
 		auto target = val->vals;
 		
@@ -273,6 +278,29 @@ int main()
 		return ActionVal::EMPTY();
 	});
 
+
+	auto mapped_keys = std::unordered_map<sf::Keyboard::Key, string_t, std::hash<int> >();
+	//todo: same for gamepad and mouse stuff, but encapsulate in class first
+	script_runner->add_def(TEXT("def_input_mapping"), [&](ScriptRaw * raw){
+		string_t mapped_val = raw->vals->vals;
+		auto scope = new ScriptScope();
+		scope->defs[TEXT("def_in")] = [&, mapped_val](ScriptRaw* in_raw){
+			string_t input_type = in_raw->vals->vals;
+			if (input_type == TEXT("keypress"))
+			{
+				mapped_keys[(sf::Keyboard::Key)in_raw->vals->next->vali()] = mapped_val;
+			}
+			else if (input_type.find(TEXT("gp_")) == 0)
+			{
+				//gamepad stuffs
+			}
+			return (ScriptScope*)NULL;
+		};
+		return scope;
+	});
+
+
+
 	script_runner->run(ResourceManager::get_script(TEXT("main")));
 	
 	bool button_pressed = false;
@@ -281,6 +309,12 @@ int main()
 	for (auto key : context_manager->Keys())
 	{
 		key_pressed[key] = false;
+	}
+
+	auto mapped_key_pressed = std::unordered_map<sf::Keyboard::Key, bool, std::hash<int> >();
+	for (auto key : mapped_keys)
+	{
+		mapped_key_pressed[key.first] = false;
 	}
 
     auto video_modes = sf::VideoMode::getFullscreenModes();
@@ -307,6 +341,20 @@ int main()
 				if (event.type == sf::Event::Closed)
 				{
 					window->close();
+				}
+			}
+
+			for (auto key : mapped_keys)
+			{
+				if (sf::Keyboard::isKeyPressed(key.first))
+				{
+					mapped_key_pressed[key.first] = true;
+				}
+				else if (mapped_key_pressed[key.first])
+				{
+					auto handled = context_manager->handle_named_event(key.second);
+					mapped_key_pressed[key.first] = false;
+					if (!handled) std::cout << "key was not handled: " << key.first;
 				}
 			}
 
