@@ -146,7 +146,7 @@ void GameMap::hack_a_map()
     {
         for(int by = 0; by < _height; by++)
         {
-			_layers[0][bx][by] = 0;
+            _layers[0][bx][by] = 1;
 			switch (by % 3)
 			{
 			case 0:

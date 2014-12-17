@@ -101,7 +101,7 @@ def_context settings_menu
       ease opacity squared 1 0 100
 
 def_resource map map1
-  def_attrib size 17 12
+  def_attrib size 17 10
   def_layer
     def_tile 0 empty
     def_tile 1 plaza
@@ -119,7 +119,7 @@ def_resource map map1
     def_tile 10 road_new
     def_tile 11 road_esw
     def_tile 12 road_nsw
-    def_offset -20 -20
+    def_offset 0 -80
     #hypothetically data here
 
 def_context game
