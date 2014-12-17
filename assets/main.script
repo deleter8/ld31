@@ -1,4 +1,4 @@
-#game sequence
+#make so can load these from another file, whether different or same format
 set g_window_w 1024#1366#1024
 set g_window_h 576#768#576
 set g_current_map ""
@@ -6,8 +6,6 @@ set g_current_map_region ""
 set g_control_type km #km (keyboard&mouse), gp (gamepad) <- scripter defined 
                       #not system hardcoded
 set g_control_auto $true
-
-open_window $g_window_w $g_window_h "Dare the Thirty First" #fullscreen
 
 import resources
 
@@ -94,9 +92,9 @@ def_context main_menu
   def_element start_label
     def_attrib selectable value:true order:0
     def_attrib text start 10 -25 156
-  def_handler mouseclick
-    play_sound menu_click
-    run_seq start_game
+    def_handler mouseclick
+      play_sound menu_click
+      run_seq start_game
   def_element settings_label
     def_attrib text settings 10 175 156
     def_handler mouseclick
@@ -240,22 +238,33 @@ def_context game
     def_step
       ease volume squared 1 0 200
 
-#def_view game_city_view_km #keyboard and mouse view
+def_view game_city_gp
+  def_mode selecting
+    def_handler gp_select #gamepad select
+      emit_event zoom_in
 
-#def_context game_city_context
-#  def_attrib map value:$get_map(name:$g_current_map)
-#  def_mode selecting
-#    def_handler gp_select #gamepad select
-#      set g_current_map_region $s_map_region
-#      run_seq show_map_region
 #todo: remember, use mouseclick and mousealtclick, not "right/left"
-#    def_handler mouseclick $map_click_region(out:s_map_region) 
-#      set g_current_map_region $s_map_region
-#      run_seq show_map_region
+def_view game_city_view_km #keyboard and mouse view
+  def_mode selecting
+    #todo: sort this out, somehow need to dynamically create a box for each 
+    #block on the grid since its dynamic based on several factors can't just
+    #hardcode it. Figure out how to resolve this dilemna
+    def_handler mouseclick $map_click_region(out:s_map_region) 
+      set g_current_map_region $s_map_region
+      run_seq show_map_region
+
+def_context game_city_context
+  def_attrib map $g_current_map
+  
+  def_handler zoom_in
+    set g_current_map_region $s_map_region
+    run_seq show_map_region
 
 
-#def_seq show_map_region
-#  def_step
-#    push_context game_region_view
+def_seq show_map_region
+  def_step
+    push_context game_region_view
+
+open_window $g_window_w $g_window_h "Dare the Thirty First" #fullscreen
 
 run_seq init_menu
