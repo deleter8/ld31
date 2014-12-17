@@ -179,11 +179,10 @@ int main()
 		return ActionVal::EMPTY();
 	});
 
-	script_runner->add_action(TEXT("set_control_if_auto"), [&](ActionVal * val){
+	script_runner->add_action(TEXT("set_control_if_auto"), [&](ActionVal *){
 		std::cout << "warning: set_control_if_auto not defined yet" << std::endl;
 		return ActionVal::EMPTY();
 	});
-
 
 	script_runner->add_action(TEXT("lower"), [](ActionVal * val){
 		auto target = val->vals;
