@@ -88,7 +88,6 @@ bool TileMap::loadFromFile(sf::Texture * tileset, sf::Vector2u tile_size, string
 		}
 		else
 		{
-			std::cout << "could not find data file " << ws2s(filename) << std::endl;
 			return false;
 		}
 	}

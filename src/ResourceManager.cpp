@@ -97,6 +97,7 @@ TileMap * ResourceManager::get_tile_map(string_t tileset_name, string_t data_nam
 		auto tex_info = _inst->_textures[tileset_name];
 		if (!tile_map->loadFromFile(tex_info.texture, sf::Vector2u(tex_info.sprite_width, tex_info.sprite_height), _inst->_filepath + data_name + TEXT(".dat")))
 		{
+			std::cout << "could not find data file " << ws2s(data_name) << std::endl;
 			delete tile_map;
 			return NULL;
 		}
