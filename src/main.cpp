@@ -338,8 +338,8 @@ int main()
 	sf::Time last_time = clock.getElapsedTime();
 	int leftover_ticks = 0;
 	
-	float fps_log[1000];
-	for (int i = 0; i < 1000; i++) fps_log[i] = 0.f;
+	float fps_log[100];
+	for (int i = 0; i < 100; i++) fps_log[i] = 0.f;
 	int fps_loc = 0;
 	float fps = 0;
 
@@ -352,10 +352,10 @@ int main()
 		last_time = clock.getElapsedTime();
 		
 		//temp fps stuff:
-		fps -= fps_log[fps_loc]/1000.f;
+		fps -= fps_log[fps_loc]/100;
 		fps_log[fps_loc] = 1000000.f / elapsed.asMicroseconds();
-		fps += fps_log[fps_loc] / 1000.f;
-		fps_loc = (fps_loc + 1) % 1000;
+		fps += fps_log[fps_loc] / 100;
+		fps_loc = (fps_loc + 1) % 100;
 		stringstream_t fps_string;
 		fps_string << (int)fps;
 		fps_text.setString(fps_string.str());

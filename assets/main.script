@@ -201,6 +201,33 @@ def_seq end_game
     pop_context game
     run_seq init_menu
 
+def_format map
+  def_version 1
+  def_layer thetiles type:tiled width:68 height:40
+    def_attrib tile_size 160 160
+    def_attrib texture roads
+
+def_format map
+  def_version 2
+  def_layer ground type:tiled width:68 height:40
+    def_attrib tile_size 160 160
+    def_attrib texture roads
+  def_layer roads type:tiled width:68 height:40
+    def_attrib tile_size 160 160
+    def_attrib texture roads
+    def_attrib offset 0 -80
+  def_layer building_zones type:sparse
+    def_attrib visible false
+
+#example migration
+def_format_migration map 1 2
+  def_layer ground
+    foreach tile -> tile.index = 5
+
+  def_layer roads
+    tiles = $old.thetiles
+    foreach tile in tiles -> if tile.index==5 then tile.index=-1
+
 def_map map1
   def_layer
     def_texture roads
