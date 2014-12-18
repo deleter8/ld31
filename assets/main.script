@@ -216,17 +216,32 @@ def_format map
     def_attrib tile_size 160 160
     def_attrib texture roads
     def_attrib offset 0 -80
+    def_property is_intersection type:bool default:false
   def_layer building_zones type:sparse
     def_attrib visible false
+    def_property zone_type type:string default:empty
+  def_layer zoom_areas type:tiled
+    def_attrib visible false
+    def_attrib tile_size 160*16 160*9
 
+#tiled layers are filled grids of equivalent size. they always have a "tiles"
+#object that has the tile data, tex_index(int). on top, adding property gives more
+#data to each tile
+
+#sparse layers are loose layers of things w/various sizes, shapes, & positions
+#these are a list rather than a grid. they have default properties of 
+#position, shape, size, rotation, tex_index (sprite), index(id of thing pressed)
+    
 #example migration
 def_format_migration map 1 2
   def_layer ground
-    foreach tile -> tile.index = 5
+    foreach tile -> tile.tex_index = 5
 
   def_layer roads
     tiles = $old.thetiles
-    foreach tile in tiles -> if tile.index==5 then tile.index=-1
+    foreach tile in tiles -> 
+      if tile.tex_index==5 then tile.tex_index=-1
+      if tile.tex_index==2 then tile.is_intersection=true
 
 def_map map1
   def_layer
@@ -245,7 +260,7 @@ def_context game
     play_sound jump2
   def_handler back
     run_seq end_game
-    
+  
   def_anim show
     def_step
       ease volume squared 0 1 200
@@ -259,15 +274,12 @@ def_view game_city_gp
       emit_event zoom_in
 
 #todo: remember, use mouseclick and mousealtclick, not "right/left"
-def_view game_city_view_km #keyboard and mouse view
+def_view game_city_km #keyboard and mouse view
   def_mode selecting
-    #todo: sort this out, somehow need to dynamically create a box for each 
-    #block on the grid since its dynamic based on several factors can't just
-    #hardcode it. Figure out how to resolve this dilemna
-    def_handler mouseclick $map_click_region(out:s_map_region) 
-      set g_current_map_region $s_map_region
+    def_handler mouseclick map.zoom_areas #TODO!!!!
+      set g_current_map_region $event.target
       run_seq show_map_region
-
+    
 def_context game_city_context
   def_attrib map $g_current_map
   
@@ -278,7 +290,14 @@ def_context game_city_context
 
 def_seq show_map_region
   def_step
+    disable game.map.zoom_areas #TODO!!!!
     push_context game_region_view
+    
+def_seq show_whole_map
+  def_step
+    pop_context game_region_view
+    enable game.map.zoom_areas
+    
 
 open_window $g_window_w $g_window_h "Dare the Thirty First" #fullscreen
 
