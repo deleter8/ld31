@@ -74,6 +74,7 @@ public:
 	static sf::Sprite * get_sprite(string_t sprite_name);
 	static sf::Sound * get_sound(string_t sound);
 	static sf::Music * get_music(string_t music);
+	static sf::Font * get_font();
 	static sf::Font * get_font(string_t font_name);
 	static ScriptRaw * get_script(string_t script_name);
 	static sf::Text * get_text(string_t id);

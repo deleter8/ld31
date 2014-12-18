@@ -337,10 +337,29 @@ int main()
 	sf::Clock clock;
 	sf::Time last_time = clock.getElapsedTime();
 	int leftover_ticks = 0;
+	
+	float fps_log[1000];
+	for (int i = 0; i < 1000; i++) fps_log[i] = 0.f;
+	int fps_loc = 0;
+	float fps = 0;
+
+	auto fps_text = sf::Text("-", *ResourceManager::get_font(), 40);
+	fps_text.setPosition(0.f, 0.f);
+	fps_text.setColor(sf::Color(255, 0, 0));
 	while (!quit_game)
 	{
 		sf::Time elapsed = clock.getElapsedTime() - last_time;
 		last_time = clock.getElapsedTime();
+		
+		//temp fps stuff:
+		fps -= fps_log[fps_loc]/1000.f;
+		fps_log[fps_loc] = 1000000.f / elapsed.asMicroseconds();
+		fps += fps_log[fps_loc] / 1000.f;
+		fps_loc = (fps_loc + 1) % 1000;
+		stringstream_t fps_string;
+		fps_string << (int)fps;
+		fps_text.setString(fps_string.str());
+
 		if (window != NULL && window->isOpen())
 		{
 			sf::Event event;
@@ -400,17 +419,18 @@ int main()
 				if (in_window) std::cout << coords.x << ", " << coords.y << std::endl;
 			}
 
-			auto ticks = elapsed.asMilliseconds() + leftover_ticks;
+			auto ticks = elapsed.asMicroseconds() + leftover_ticks;
 
-			while (ticks >= 5)
+			while (ticks >= 5000)
 			{
 				easing_manager->run(5);
-				ticks -= 5;
+				ticks -= 5000;
 			}
 			leftover_ticks = ticks;
 
 			window->clear();
 			context_manager->render(*window);
+			window->draw(fps_text);
 			window->display();
 		}
 		ExecutionManager::execute();

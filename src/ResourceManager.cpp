@@ -129,6 +129,11 @@ sf::Font * ResourceManager::get_font(string_t font_name)
 	return _inst->_fonts[font_name];
 }
 
+sf::Font * ResourceManager::get_font()
+{
+	return _inst->_default_font;
+}
+
 void ResourceManager::set_default_font(string_t font_name)
 {
 	_inst->_default_font = _inst->_fonts[font_name];
