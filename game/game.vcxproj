@@ -17,6 +17,7 @@
     <ClCompile Include="..\src\ContextManager.cpp" />
     <ClCompile Include="..\src\ExecutionManager.cpp" />
     <ClCompile Include="..\src\GameMap.cpp" />
+    <ClCompile Include="..\src\GameMapManager.cpp" />
     <ClCompile Include="..\src\IRenderObject.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\PrimitiveRenderObjects.cpp" />
@@ -28,6 +29,7 @@
     <ClCompile Include="..\src\SequenceManager.cpp" />
     <ClCompile Include="..\src\Easing.cpp" />
     <ClCompile Include="..\src\EasingManager.cpp" />
+    <ClCompile Include="..\src\TileMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\ActionScopeManager.h" />
@@ -37,6 +39,7 @@
     <ClInclude Include="..\include\ExecutionManager.h" />
     <ClInclude Include="..\include\fstream_t.h" />
     <ClInclude Include="..\include\GameMap.h" />
+    <ClInclude Include="..\include\GameMapManager.h" />
     <ClInclude Include="..\include\IEasingTarget.h" />
     <ClInclude Include="..\include\IRenderObject.h" />
     <ClInclude Include="..\include\PrimitiveRenderObjects.h" />
@@ -49,6 +52,7 @@
     <ClInclude Include="..\include\string_t.h" />
     <ClInclude Include="..\include\Easing.h" />
     <ClInclude Include="..\include\EasingManager.h" />
+    <ClInclude Include="..\include\TileMap.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{171B2F6F-A551-4DE4-90D4-B7353C1A244B}</ProjectGuid>

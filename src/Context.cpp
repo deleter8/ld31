@@ -2,6 +2,7 @@
 #include "ResourceManager.h"
 #include "ActionScopeManager.h"
 #include "PrimitiveRenderObjects.h"
+#include "GameMapManager.h"
 #include <iostream>
 
 
@@ -216,7 +217,7 @@ ScriptScope * Context::build_context(ScriptRaw * raw)
         else if(attrib_name == TEXT("map"))
         {
             string_t map_name = attrib_raw->vals->next->vals;
-            _draw_list.push_back(ResourceManager::get_map(map_name));
+            _draw_list.push_back(GameMapManager::get_map(map_name));
         }
 		else if (attrib_name == TEXT("music"))
 		{

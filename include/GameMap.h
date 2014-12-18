@@ -9,58 +9,16 @@
 #include "ScriptRaw.h"
 #include "ScriptScope.h"
 #include "IRenderObject.h"
+#include "TileMap.h"
 
 
-class MapLayer;
-
-class MapTileBuilder
+class MapLayerInfo
 {
-private:
-    MapLayer & _layer;
-    int _row;
-    int _column;
-
 public:
-    MapTileBuilder(MapLayer& layer, int column, int row);
-
-    MapTileBuilder& operator=(int tile);
-};
-
-class MapColumnBuilder
-{
-private:
-    MapLayer & _layer;
-    int _column;
-
-public:
-    MapColumnBuilder(MapLayer& layer, int column);
-
-    MapTileBuilder operator[](int row);
-};
-
-class MapLayer
-{
-private:
-
-    std::vector<string_t> _sprite_names;
-    std::vector<std::vector<sf::Sprite*>> _sprite_info;
-    int _width;
-    int _height;
-    sf::Vector2f _scale;
-	sf::Vector2f _position;
-
-public:
-    friend class MapTileBuilder;
-    MapLayer(int w, int h);
-
-    std::vector<std::vector<int>> tiles;
-    MapColumnBuilder operator [](int);
-
-    void render(sf::RenderTarget&);
-    void prep();
-    void set_scale(sf::Vector2f scale);
-
-    ScriptScope * build_layer(ScriptRaw *);
+	MapLayerInfo();
+	string_t data_name;
+	string_t texture_name;
+	sf::Vector2f offset;
 };
 
 class GameMap : public IRenderObject
@@ -68,7 +26,8 @@ class GameMap : public IRenderObject
 private:
     int _width;
     int _height;
-    std::vector<MapLayer> _layers;
+	std::vector<MapLayerInfo> _layer_info;
+    std::vector<TileMap*> _layers;
     sf::Vector2f _scale;
     sf::FloatRect _size;
     sf::Vector2f _position;//note: not used yet!
@@ -79,9 +38,9 @@ public:
     GameMap(int w, int h);
     virtual ~GameMap();
 
-    MapLayer& operator[](int layer);
+    //MapLayer& operator[](int layer);
 
-    void hack_a_map();
+    //void hack_a_map();
 
     virtual void prep();
     virtual void render(sf::RenderTarget &);

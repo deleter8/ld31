@@ -87,9 +87,23 @@ sf::Text * ResourceManager::get_text(string_t id)
 	return new sf::Text(_inst->_text[id], *_inst->_default_font, (int)(30.f * _inst->_scaling_factor.x));
 }
 
-GameMap * ResourceManager::get_map(string_t map_name)
+TileMap * ResourceManager::get_tile_map(string_t tileset_name, string_t data_name)
 {
-    return _inst->_maps[map_name];
+	string_t key = data_name + tileset_name;
+	if (_inst->_tile_maps.find(key) == _inst->_tile_maps.end())
+	{
+		_inst->load_texture_if_needed(tileset_name);
+		auto tile_map = new TileMap();
+		auto tex_info = _inst->_textures[tileset_name];
+		if (!tile_map->loadFromFile(tex_info.texture, sf::Vector2u(tex_info.sprite_width, tex_info.sprite_height), _inst->_filepath + data_name + TEXT(".dat")))
+		{
+			delete tile_map;
+			return NULL;
+		}
+		tile_map->setScale(_inst->_scaling_factor);
+		_inst->_tile_maps[key] = tile_map;
+	}
+    return _inst->_tile_maps[key];
 }
 
 ScriptRaw * ResourceManager::get_script(string_t script_name)
@@ -128,7 +142,7 @@ ResourceManager::ResourceManager()
 	_sprite_defs = std::unordered_map<string_t, SpriteDef>();
 	_soundbuffers = std::unordered_map<string_t, sf::SoundBuffer *>();
 	_scripts = std::unordered_map<string_t, ScriptRaw *>();
-    _maps = std::unordered_map<string_t, GameMap*>();
+    _tile_maps = std::unordered_map<string_t, TileMap*>();
 
 	_internal_res = sf::Vector2i(2560, 1440);
 	_scaling_factor = sf::Vector2f(1, 1);
@@ -215,13 +229,6 @@ ScriptScope * ResourceManager::build_resource(ScriptRaw * raw)
 	{
 		get_sound(raw->vals->next->vals);
 	}
-    else if (resource_type == TEXT("map"))
-    {
-        delete scope;
-		string_t map_name = raw->vals->next->vals;
-		_inst->_maps[map_name] = new GameMap();
-		return _inst->_maps[map_name]->build_map(raw);
-    }
 	else if (resource_type == TEXT("texture"))
 	{
 		TextureWrapper * texture_wrapper = &_inst->_textures[raw->vals->next->vals];

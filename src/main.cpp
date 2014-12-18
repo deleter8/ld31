@@ -18,6 +18,9 @@
 #include "ActionScopeManager.h"
 #include "Easing.h"
 #include "EasingManager.h"
+#include "GameMap.h"
+#include "GameMapManager.h"
+
 
 int main()
 {
@@ -51,6 +54,12 @@ int main()
 		auto local_scope = seq->build_sequence(raw);
 		seq_manager->add_sequence(raw->vals->vals, seq);
 		return local_scope;
+	});
+
+	script_runner->add_def(TEXT("def_map"), [&](ScriptRaw* raw){
+		auto map = new GameMap();
+		GameMapManager::add_map(raw->vals->vals, map);
+		return map->build_map(raw);
 	});
 
 	script_runner->add_async_action(TEXT("run_seq"), [&](ActionVal * val, std::function<void()> done){
@@ -340,6 +349,7 @@ int main()
 				if (event.type == sf::Event::Closed)
 				{
 					window->close();
+					quit_game = true;
 				}
 			}
 

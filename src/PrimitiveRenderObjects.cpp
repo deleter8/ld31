@@ -1,6 +1,7 @@
 #include "PrimitiveRenderObjects.h"
 #include "ResourceManager.h"
 
+
 TextRenderObject::TextRenderObject(string_t text_name)
 {
     _text_name = text_name;

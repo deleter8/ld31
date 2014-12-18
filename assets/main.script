@@ -1,4 +1,4 @@
-#make so can load these from another file, whether different or same format
+#load these from another file, whether different or same format
 set g_window_w 1024#1366#1024
 set g_window_h 576#768#576
 set g_current_map ""
@@ -201,25 +201,13 @@ def_seq end_game
     pop_context game
     run_seq init_menu
 
-def_resource map map1
-  def_attrib size 17 10
+def_map map1
   def_layer
-    def_tile 0 empty
-    def_tile 1 plaza
+    def_texture roads
+    def_data map1layer0
   def_layer
-    def_tile 0 empty
-    def_tile 1 road_ew
-    def_tile 2 road_ne
-    def_tile 3 road_nesw
-    def_tile 4 road_ns
-    def_tile 5 road_nw
-    def_tile 6 plaza
-    def_tile 7 road_es
-    def_tile 8 road_sw
-    def_tile 9 road_nes
-    def_tile 10 road_new
-    def_tile 11 road_esw
-    def_tile 12 road_nsw
+    def_texture roads
+    def_data map1layer1
     def_offset 0 -80
     #hypothetically data here
 
