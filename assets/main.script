@@ -58,7 +58,7 @@ def_view main_menu
       def_step
         ease scale sine .9 1 300
   def_element settings_label
-    def_attrib selection can-select:true order:1
+    def_attrib selection can_select:true order:1
     def_attrib text settings 10 175 156
     def_handler gp_select
       if_true $g_control_auto set(var:g_control_type value:gp)
