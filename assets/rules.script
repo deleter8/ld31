@@ -1,0 +1,44 @@
+
+every ticks:1000 ->
+  compute [affluence * 10] -> (scaled_affluence)
+    gen_random min:0 max:$scaled_affluence -> (create_count)
+      produce create_lev1 create_count
+    
+every ticks:10000 ->
+  compute [affluence * 3] -> (scaled_affluence)
+    gen_random min:0 max:$scaled_affluence -> (create_count)
+      produce create_lev2 create_count
+
+every ticks:10000 ->
+  compute [affluence * 3] -> (scaled_affluence)
+    gen_random min:0 max:$scaled_affluence -> (kill_count)
+      produce kill_lev1 kill_count
+    
+every ticks:25000 ->
+  compute [affluence * 1] -> (scaled_affluence)
+    gen_random min:0 max:$scaled_affluence -> (kill_count)
+      produce kill_lev2 kill_count
+    
+consume create_lev1 -> (create_count)
+  select squares map.blocks[.zone=res1|.zone=com1|.zone=ind1].squares[.building=nil] -> (squares)
+    extract_random squares count:$create_count -> (build_squares)
+      foreach build_squares -> (square)
+        produce add_building square
+
+consume create_lev2 -> (create_count)
+  select squares map.blocks[.zone=res2|.zone=com2|.zone=ind2].squares[.building=nil] -> (squares)
+    extract_random squares count:$create_count -> (build_squares)
+      foreach build_squares -> (square)
+        produce add_building square
+
+consume kill_lev1 -> (kill_count)
+  select squares map.blocks[.zone=res1|.zone=com1|.zone=ind1].squares[.building!=nil] -> (squares)
+    extract_random squares count:$kill_count -> (kill_squares)
+      foreach kill_squares -> (square)
+        produce kill_building square
+
+consume kill_lev2 -> (kill_count)
+  select squares map.blocks[.zone=res1|.zone=com1|.zone=ind1].squares[.building!=nil] -> (squares)
+    extract_random squares count:$kill_count -> (kill_squares)
+      foreach kill_squares -> (square)
+        produce kill_building square

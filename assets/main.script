@@ -201,14 +201,7 @@ def_seq end_game
     pop_context game
     run_seq init_menu
 
-def_format map
-  def_version 1
-  def_layer thetiles type:tiled width:68 height:40
-    def_attrib tile_size 160 160
-    def_attrib texture roads
-
-def_format map
-  def_version 2
+def_data map
   def_layer ground type:tiled width:68 height:40
     def_attrib tile_size 160 160
     def_attrib texture roads
@@ -220,9 +213,6 @@ def_format map
   def_layer building_zones type:sparse
     def_attrib visible false
     def_property zone_type type:string default:empty
-  def_layer zoom_areas type:tiled
-    def_attrib visible false
-    def_attrib tile_size 160*16 160*9
 
 #tiled layers are filled grids of equivalent size. they always have a "tiles"
 #object that has the tile data, tex_index(int). on top, adding property gives more
@@ -231,17 +221,6 @@ def_format map
 #sparse layers are loose layers of things w/various sizes, shapes, & positions
 #these are a list rather than a grid. they have default properties of 
 #position, shape, size, rotation, tex_index (sprite), index(id of thing pressed)
-    
-#example migration
-def_format_migration map 1 2
-  def_layer ground
-    foreach tile -> tile.tex_index = 5
-
-  def_layer roads
-    tiles = $old.thetiles
-    foreach tile in tiles -> 
-      if tile.tex_index==5 then tile.tex_index=-1
-      if tile.tex_index==2 then tile.is_intersection=true
 
 def_map map1
   def_layer
