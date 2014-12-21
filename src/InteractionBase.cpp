@@ -1,4 +1,4 @@
-#include "include/InteractionBase.h"
+#include "InteractionBase.h"
 
 
 InteractionBase::InteractionBase()
