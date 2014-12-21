@@ -308,7 +308,6 @@ int main()
 	});
 
 
-
 	script_runner->run(ResourceManager::get_script(TEXT("main")));
 	
 	bool button_pressed = false;

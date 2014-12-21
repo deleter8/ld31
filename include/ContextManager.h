@@ -8,6 +8,7 @@
 #include "string_t.h"
 #include "Context.h"
 #include "ActionVal.h"
+#include "InteractionBase.h"
 
 class ContextManager
 {

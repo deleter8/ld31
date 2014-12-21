@@ -9,11 +9,7 @@
 Context::Context(string_t name)
 {
 	_name = name;
-	_mouseclick_handlers = std::list<std::pair<sf::IntRect, std::function<bool(MouseEvent)>>>();
-	_mousedown_handlers = std::list<std::pair<sf::IntRect, std::function<bool(MouseEvent)>>>();
-	_keypress_handlers = std::list<std::pair<sf::Keyboard::Key, std::function<bool()>>>();
-	_keyheld_handlers = std::list<std::pair<sf::Keyboard::Key, std::function<bool()>>>();
-	_keys = std::list<sf::Keyboard::Key>();
+    _keys_combined = std::list<sf::Keyboard::Key>();
 	_music = NULL;
 	_inner_elements = std::list<Context*>();
 	_inner_element_lookup = std::unordered_map<string_t, Context*>();
@@ -21,60 +17,25 @@ Context::Context(string_t name)
 	has_lingering_mouseclick_handler = false;
 	has_lingering_mousedown_handler = false;
 
-	_only_handle_when_top_context = false;
 	_music_thing = TEXT("");
 }
 
-void Context::add_mouseclick_handler(sf::IntRect region, std::function<bool(MouseEvent)> handler)
+Context::~Context()
 {
-	_mouseclick_handlers.push_back(std::pair<sf::IntRect, std::function<bool(MouseEvent)>>(region, handler));
-}
 
-void Context::add_mousedown_handler(sf::IntRect region, std::function<bool(MouseEvent)> handler)
-{
-	_mousedown_handlers.push_back(std::pair<sf::IntRect, std::function<bool(MouseEvent)>>(region, handler));
-}
-
-void Context::add_keypress_handler(sf::Keyboard::Key key, std::function<bool()> handler)
-{
-	_keypress_handlers.push_back(std::pair<sf::Keyboard::Key, std::function<bool()>>(key, handler));
-	_keys.push_back(key);
-}
-
-void Context::add_keyheld_handler(sf::Keyboard::Key key, std::function<bool()> handler)
-{
-	_keyheld_handlers.push_back(std::pair<sf::Keyboard::Key, std::function<bool()>>(key, handler));
-	_keys.push_back(key);
-}
-
-void Context::add_named_event_handler(string_t event_name, std::function<bool()> handler)
-{
-	_named_event_handlers.push_back(std::pair<string_t, std::function<bool()>>(event_name, handler));
 }
 
 void Context::add_inner_element(string_t name, Context * element)
 {
 	_inner_element_lookup[name] = element;
 	_inner_elements.push_back(element);
-
-	for (auto key : element->Keys())
-	{
-		_keys.push_back(key);
-	}
-
-	_keys.unique();
 }
 
 bool Context::handle_mouseclick(int x, int y)
 {
 	ActionScopeManager::set_scope(this);
-	for (auto it : _mouseclick_handlers)
-	{
-		if (it.first.contains(sf::Vector2<int>(x, y)))
-		{
-			if (it.second(MOUSE_CLICK)) return true;
-		}
-	}
+
+    if(InteractionBase::handle_mouseclick(x, y)) return true;
 
 	for (auto element : _inner_elements)
 	{
@@ -87,13 +48,8 @@ bool Context::handle_mouseclick(int x, int y)
 bool Context::handle_mousedown(int x, int y)
 {
 	ActionScopeManager::set_scope(this);
-	for (auto it : _mousedown_handlers)
-	{
-		if (it.first.contains(sf::Vector2<int>(x, y)))
-		{
-			if (it.second(MOUSE_DOWN)) return true;
-		}
-	}
+
+    if(InteractionBase::handle_mousedown(x, y)) return true;
 
 	for (auto element : _inner_elements)
 	{
@@ -106,10 +62,8 @@ bool Context::handle_mousedown(int x, int y)
 bool Context::handle_keypress(sf::Keyboard::Key key)
 {
 	ActionScopeManager::set_scope(this);
-	for (auto it : _keypress_handlers)
-	{
-		if (it.first == key && it.second()) return true;
-	}
+
+    if(InteractionBase::handle_keypress(key)) return true;
 
 	for (auto element : _inner_elements)
 	{
@@ -121,10 +75,8 @@ bool Context::handle_keypress(sf::Keyboard::Key key)
 bool Context::handle_keyheld(sf::Keyboard::Key key)
 {
 	ActionScopeManager::set_scope(this);
-	for (auto it : _keyheld_handlers)
-	{
-		if (it.first == key && it.second()) return true;
-	}
+
+    if(InteractionBase::handle_keyheld(key)) return true;
 
 	for (auto element : _inner_elements)
 	{
@@ -135,10 +87,9 @@ bool Context::handle_keyheld(sf::Keyboard::Key key)
 
 bool Context::handle_named_event(string_t event_name)
 {
-	for (auto handler : _named_event_handlers)
-	{
-		if (handler.first == event_name && handler.second()) return true;
-	}
+    ActionScopeManager::set_scope(this);
+
+    if(InteractionBase::handle_named_event(event_name)) return true;
 
 	for (auto element : _inner_elements)
 	{
@@ -162,24 +113,16 @@ void Context::render(sf::RenderWindow& window)
 
 const std::list<sf::Keyboard::Key> Context::Keys()
 {
-	_keys.clear();
+    _keys_combined.clear();
+    for(auto key : InteractionBase::Keys())
+        _keys_combined.push_back((key));
+
 	for (auto element : _inner_elements)
-	{
-		for (auto key : element->Keys())
-		{
-			_keys.push_back(key);
-		}
-	}	
-	for (auto handler : _keypress_handlers)
-	{
-		_keys.push_back(handler.first);
-	}
-	for (auto handler : _keyheld_handlers)
-	{
-		_keys.push_back(handler.first);
-	}
-	_keys.unique();
-	return _keys;
+        for (auto key : element->Keys())
+            _keys_combined.push_back(key);
+
+    _keys_combined.unique();
+    return _keys_combined;
 }
 
 ScriptScope * Context::build_context(ScriptRaw * raw)
@@ -398,12 +341,6 @@ void Context::prep()
 		_music->play();
 	}
 }
-
-const bool& Context::only_handle_when_top_context()
-{
-	return _only_handle_when_top_context;
-}
-
 
 void Context::step_scale(float val)
 {
