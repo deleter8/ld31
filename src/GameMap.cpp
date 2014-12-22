@@ -39,6 +39,43 @@ void TiledGameMapLayer::render(sf::RenderTarget & render_target)
     render_target.draw(*_tile_map);
 }
 
+void TiledGameMapLayer::set_scale(float x, float y)
+{
+	_tile_map->setScale(x, y);
+}
+
+const sf::Vector2f& TiledGameMapLayer::get_scale() const
+{
+	return _tile_map->getScale();
+}
+
+sf::FloatRect TiledGameMapLayer::get_bounds() const
+{
+	//TODO actually get/compute this somehow (probably implement on underlying object)
+	return _size;
+}
+
+void TiledGameMapLayer::set_position(float x, float y)
+{
+	_tile_map->setPosition(sf::Vector2f(x, y));
+}
+
+const sf::Vector2f& TiledGameMapLayer::get_position() const
+{
+	return _tile_map->getPosition();
+}
+
+void TiledGameMapLayer::set_color(sf::Color c)
+{
+	_color = c;//todo
+}
+
+const sf::Color& TiledGameMapLayer::get_color() const
+{
+	return _color;
+}
+
+
 SparseGameMapLayer::SparseGameMapLayer()
 {
 
@@ -57,6 +94,42 @@ void SparseGameMapLayer::prep()
 void SparseGameMapLayer::render(sf::RenderTarget & /*render_target*/)
 {
     //TODO
+}
+
+void SparseGameMapLayer::set_scale(float x, float y)
+{
+	_scale = sf::Vector2f(x, y);
+}
+
+const sf::Vector2f& SparseGameMapLayer::get_scale() const
+{
+	return _scale;
+}
+
+sf::FloatRect SparseGameMapLayer::get_bounds() const
+{
+	//TODO actually get/compute this somehow (probably implement on underlying object)
+	return _size;
+}
+
+void SparseGameMapLayer::set_position(float x, float y)
+{
+	_position = sf::Vector2f(x, y);
+}
+
+const sf::Vector2f& SparseGameMapLayer::get_position() const
+{
+	return _position;
+}
+
+void SparseGameMapLayer::set_color(sf::Color c)
+{
+	_color = c;//todo
+}
+
+const sf::Color& SparseGameMapLayer::get_color() const
+{
+	return _color;
 }
 
 GameMap::GameMap()
@@ -124,30 +197,18 @@ ScriptScope * GameMap::build_map(ScriptRaw *)
 
 void GameMap::prep()
 {
-    for(auto layer : _layers)
-    {
-        layer->prep();
-	}	
+    for(auto layer : _layers) layer->prep();
 }
 
 void GameMap::render(sf::RenderTarget & target)
 {
-    for(auto layer : _layers)
-    {
-        layer->render(target);
-    }
+    for(auto layer : _layers) layer->render(target);
 }
 
 void GameMap::set_scale(float x, float y)
 {
     _scale = sf::Vector2f(x, y);
-//TODO:
-//    for(auto& layer : _layers)
-//    {
-//		layer->setScale(sf::Vector2f(
-//			_scale.x * ResourceManager::scaling_factor().x,
-//			_scale.y * ResourceManager::scaling_factor().y));
-//    }
+	for (auto layer : _layers) layer->set_scale(x, y);
 }
 
 const sf::Vector2f& GameMap::get_scale() const
@@ -163,12 +224,7 @@ sf::FloatRect GameMap::get_bounds() const
 void GameMap::set_position(float x, float y)
 {
     _position = sf::Vector2f(x, y);
-//TODO:
-//	for (size_t i = 0; i < _layers.size(); i++)
-//	{
-//		auto position = _position + _layer_info[i].offset;
-//		_layers[i]->setPosition(position.x * ResourceManager::scaling_factor().x, position.y  * ResourceManager::scaling_factor().y);
-//	}
+	for (auto layer : _layers) layer->set_position(x, y);
 }
 
 const sf::Vector2f& GameMap::get_position() const
@@ -178,7 +234,8 @@ const sf::Vector2f& GameMap::get_position() const
 
 void GameMap::set_color(sf::Color c)
 {
-    _color = c;//todo
+    _color = c;
+	for (auto layer : _layers) layer->set_color(c);
 }
 
 const sf::Color& GameMap::get_color() const

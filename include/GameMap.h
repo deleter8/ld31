@@ -15,12 +15,14 @@
 
 class GameMap;
 
-class GameMapLayerBase
+class GameMapLayerBase : public IRenderObject
 {
 protected:
     string_t _tex_name;
     string_t _data_name;
     sf::Vector2f _offset;
+	sf::Color _color;
+	sf::FloatRect _size;
 
 public:
     friend class GameMap;
@@ -31,6 +33,14 @@ public:
 
     virtual void render(sf::RenderTarget &)=0;
     virtual void prep()=0;
+
+	virtual void set_scale(float, float)=0;
+	virtual const sf::Vector2f& get_scale() const=0;
+	virtual void set_position(float, float)=0;
+	virtual const sf::Vector2f& get_position() const=0;
+	virtual sf::FloatRect get_bounds() const=0;
+	virtual void set_color(sf::Color c)=0;
+	virtual const sf::Color& get_color() const=0;
 };
 
 class TiledGameMapLayer : public GameMapLayerBase
@@ -47,11 +57,21 @@ public:
     virtual void render(sf::RenderTarget &);
     virtual void prep();
 
+	virtual void set_scale(float, float);
+	virtual const sf::Vector2f& get_scale() const;
+	virtual void set_position(float, float);
+	virtual const sf::Vector2f& get_position() const;
+	virtual sf::FloatRect get_bounds() const;
+	virtual void set_color(sf::Color c);
+	virtual const sf::Color& get_color() const;
 };
 
 class SparseGameMapLayer : public GameMapLayerBase
 {
 private:
+
+	sf::Vector2f _scale;
+	sf::Vector2f _position;
 
 public:
 
@@ -61,6 +81,13 @@ public:
     virtual void render(sf::RenderTarget &);
     virtual void prep();
 
+	virtual void set_scale(float, float);
+	virtual const sf::Vector2f& get_scale() const;
+	virtual void set_position(float, float);
+	virtual const sf::Vector2f& get_position() const;
+	virtual sf::FloatRect get_bounds() const;
+	virtual void set_color(sf::Color c);
+	virtual const sf::Color& get_color() const;
 };
 
 class GameMap : public IRenderObject, public InteractionBase
@@ -85,7 +112,8 @@ public:
 
     virtual void prep();
     virtual void render(sf::RenderTarget &);
-    virtual void set_scale(float, float);
+    
+	virtual void set_scale(float, float);
     virtual const sf::Vector2f& get_scale() const;
     virtual void set_position(float, float);
     virtual const sf::Vector2f& get_position() const;
