@@ -100,17 +100,17 @@ ScriptScope * GameMap::build_map(ScriptRaw *)
 
 		auto local_scope = new ScriptScope();
 		
-        local_scope->defs[TEXT("def_texture")] = [&](ScriptRaw*tex_raw){
+        local_scope->defs[TEXT("def_texture")] = [layer](ScriptRaw*tex_raw){
             layer->_tex_name = tex_raw->vals->vals;
 			return (ScriptScope*)NULL;
 		};
 		
-        local_scope->defs[TEXT("def_data")] = [&](ScriptRaw*data_raw){
+        local_scope->defs[TEXT("def_data")] = [layer](ScriptRaw*data_raw){
             layer->_data_name = data_raw->vals->vals;
 			return (ScriptScope*)NULL;
 		};
 		
-        local_scope->defs[TEXT("def_offset")] = [&](ScriptRaw*off_raw){
+        local_scope->defs[TEXT("def_offset")] = [layer](ScriptRaw*off_raw){
             layer->_offset.x = (float)off_raw->vals->vali();
             layer->_offset.y = (float)off_raw->vals->next->vali();
 			return (ScriptScope*)NULL;

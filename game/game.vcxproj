@@ -18,6 +18,7 @@
     <ClCompile Include="..\src\ExecutionManager.cpp" />
     <ClCompile Include="..\src\GameMap.cpp" />
     <ClCompile Include="..\src\GameMapManager.cpp" />
+    <ClCompile Include="..\src\InteractionBase.cpp" />
     <ClCompile Include="..\src\IRenderObject.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\PrimitiveRenderObjects.cpp" />
@@ -41,6 +42,7 @@
     <ClInclude Include="..\include\GameMap.h" />
     <ClInclude Include="..\include\GameMapManager.h" />
     <ClInclude Include="..\include\IEasingTarget.h" />
+    <ClInclude Include="..\include\InteractionBase.h" />
     <ClInclude Include="..\include\IRenderObject.h" />
     <ClInclude Include="..\include\PrimitiveRenderObjects.h" />
     <ClInclude Include="..\include\ResourceManager.h" />

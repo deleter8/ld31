@@ -425,7 +425,7 @@ int main()
 				easing_manager->run(5);
 				ticks -= 5000;
 			}
-			leftover_ticks = ticks;
+			leftover_ticks = (int)ticks;
 
 			window->clear();
 			context_manager->render(*window);
