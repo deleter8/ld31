@@ -10,24 +10,65 @@
 #include "ScriptScope.h"
 #include "IRenderObject.h"
 #include "TileMap.h"
+#include "InteractionBase.h"
 
 
-class MapLayerInfo
+class GameMap;
+
+class GameMapLayerBase
 {
+protected:
+    string_t _tex_name;
+    string_t _data_name;
+    sf::Vector2f _offset;
+
 public:
-	MapLayerInfo();
-	string_t data_name;
-	string_t texture_name;
-	sf::Vector2f offset;
+    friend class GameMap;
+
+    GameMapLayerBase();
+
+    virtual ~GameMapLayerBase();
+
+    virtual void render(sf::RenderTarget &)=0;
+    virtual void prep()=0;
 };
 
-class GameMap : public IRenderObject
+class TiledGameMapLayer : public GameMapLayerBase
+{
+private:
+
+    TileMap * _tile_map;
+
+public:
+
+    TiledGameMapLayer();
+    virtual ~TiledGameMapLayer();
+
+    virtual void render(sf::RenderTarget &);
+    virtual void prep();
+
+};
+
+class SparseGameMapLayer : public GameMapLayerBase
+{
+private:
+
+public:
+
+    SparseGameMapLayer();
+    virtual ~SparseGameMapLayer();
+
+    virtual void render(sf::RenderTarget &);
+    virtual void prep();
+
+};
+
+class GameMap : public IRenderObject, public InteractionBase
 {
 private:
     int _width;
     int _height;
-	std::vector<MapLayerInfo> _layer_info;
-    std::vector<TileMap*> _layers;
+    std::vector<GameMapLayerBase*> _layers;
     sf::Vector2f _scale;
     sf::FloatRect _size;
     sf::Vector2f _position;//note: not used yet!
