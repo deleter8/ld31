@@ -213,6 +213,12 @@ def_data map
   def_layer building_zones type:sparse
     def_attrib visible false
     def_property zone_type type:string default:empty
+    def_attrib texture buildings
+    def_object zone1
+      def_pos 2 2
+      def_tex_index 3
+      def_trait building_container #map turns this into selectable/clickable. def_trait elsewhere specifies this behavior
+
 
 #tiled layers are filled grids of equivalent size. they always have a "tiles"
 #object that has the tile data, tex_index(int). on top, adding property gives more
